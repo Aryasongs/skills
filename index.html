@@ -3,7 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexor Skill — Course library, learning paths & developer profiles | Kashish AI</title>
+<title id="pageTitle">Nexor Skill — Course library, learning paths & developer profiles | Kashish AI</title>
+<meta id="metaDesc" name="description" content="Learn to work with AI on Nexor Skill: free courses, learning paths and certifications, plus shareable developer profiles and badges.">
+<link id="canonicalLink" rel="canonical" href="https://skills.kashishai.com/">
+<!-- Open Graph / social preview defaults. Per-profile values below are overwritten
+     server-side for crawlers by the Cloudflare Pages Function at functions/dev/[[slug]].js
+     (crawlers don't run JS, so these tags must already be correct in the HTML they fetch). -->
+<meta id="ogTitle" property="og:title" content="Nexor Skill — Course library, learning paths & developer profiles">
+<meta id="ogDesc" property="og:description" content="Free AI courses, learning paths, certifications and shareable developer profiles.">
+<meta id="ogUrl" property="og:url" content="https://skills.kashishai.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nexor Skill">
+<meta id="ogImage" property="og:image" content="https://skills.kashishai.com/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta id="twTitle" name="twitter:title" content="Nexor Skill — Course library, learning paths & developer profiles">
+<meta id="twDesc" name="twitter:description" content="Free AI courses, learning paths, certifications and shareable developer profiles.">
+<meta id="twImage" name="twitter:image" content="https://skills.kashishai.com/og-default.png">
+<script type="application/ld+json" id="ldJson">
+{"@context":"https://schema.org","@type":"WebSite","name":"Nexor Skill","url":"https://skills.kashishai.com/"}
+</script>
 <!-- Firebase (compat SDK) — same shared auth/database project used by Kashish AI
      and Nexor Sparks, so signing in here is the same account everywhere. -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -366,6 +386,10 @@
   <!-- ===================== LIBRARY (screenshot layout) ===================== -->
   <section class="view active" id="view-library">
     <div class="lib-head"><h1>Course library</h1></div>
+    <div id="recoBlock" style="display:none;margin-bottom:26px;">
+      <div class="section-h" style="margin-bottom:12px;"><h2 style="font-size:16px;">Recommended for you</h2><span>Based on your progress</span></div>
+      <div class="path-grid" id="recoGrid"></div>
+    </div>
     <div class="searchbar">
       <div class="sw" id="searchIconSlot"><input id="searchInput" placeholder="Search by course name or topic"></div>
       <button class="sortbtn">By most popular ▾</button>
@@ -405,6 +429,11 @@
     <div class="commons-head">
       <h1>Commons</h1>
       <p>The shared space: browse learning paths toward a certification, and reference docs for working with Kashish AI outside a course.</p>
+    </div>
+    <div class="commons-block">
+      <div class="section-h"><h2>Leaderboard</h2><span>Top public developer profiles</span></div>
+      <div class="docs-grid" id="leaderboardGrid"></div>
+      <p class="empty-badges" id="leaderboardEmpty" style="display:none;">No public profiles yet — be the first to make yours public from Settings.</p>
     </div>
     <div class="commons-block">
       <div class="section-h"><h2>Learning paths</h2></div>
@@ -506,6 +535,37 @@
     <div class="section-h" style="margin-top:34px;"><h2>Completion badges</h2><span id="badgeCountLbl">0 earned</span></div>
     <div class="badge-grid" id="badgeGrid"></div>
     <div class="empty-badges" id="emptyBadges">No badges yet — start a course from the library to earn your first one.</div>
+  </section>
+
+  <!-- ===================== PUBLIC PROFILE (read-only, /dev/:handle) ===================== -->
+  <section class="view" id="view-publicProfile">
+    <button class="back" id="backFromPublicProfile">← Nexor Skill</button>
+    <div id="publicProfileNotFound" style="display:none;padding:60px 4px;text-align:center;">
+      <h2 style="margin:0 0 10px;">This profile isn't available</h2>
+      <p style="color:var(--muted);max-width:420px;margin:0 auto;">Either the link is wrong, or this learner hasn't made their profile public yet.</p>
+    </div>
+    <div id="publicProfileBody" style="display:none;">
+      <div class="profile-banner">
+        <div class="p-avatar-wrap">
+          <div class="p-avatar" id="ppAvatar">G</div>
+        </div>
+        <div class="p-info">
+          <h2 id="ppName">Learner</h2>
+          <div class="handle" id="ppHandle">skills.kashishai.com/dev/guest</div>
+          <div class="tags" id="ppTags"></div>
+        </div>
+        <div class="p-stats">
+          <div class="p-stat"><b id="ppStatBadges">0</b><span>Badges</span></div>
+          <div class="p-stat"><b id="ppStatCerts">0</b><span>Certifications</span></div>
+          <div class="p-stat"><b id="ppStatPoints">0</b><span>Points</span></div>
+        </div>
+      </div>
+      <div class="section-h" style="margin-top:34px;"><h2>Certifications</h2><span id="ppCertCountLbl">0 earned</span></div>
+      <div class="badge-grid" id="ppCertGrid"></div>
+      <div class="section-h" style="margin-top:34px;"><h2>Completion badges</h2><span id="ppBadgeCountLbl">0 earned</span></div>
+      <div class="badge-grid" id="ppBadgeGrid"></div>
+      <div class="empty-badges" id="ppEmptyBadges" style="display:none;">No badges yet.</div>
+    </div>
   </section>
 
   <!-- ===================== SETTINGS (Google Skills-inspired) ===================== -->
@@ -1703,6 +1763,23 @@
   function profileSlug(){ return state.userHandle || (state.userName||'guest').toLowerCase().replace(/\s+/g,'-'); }
   function shareUrl(kind, id){ return 'https://skills.kashishai.com/dev/'+profileSlug()+'/'+kind+'/'+id; }
 
+  // LinkedIn's documented "Add to Profile" deep link for certifications —
+  // https://www.linkedin.com/help/linkedin/answer/a566023
+  function linkedInAddUrl(name, date, certUrl){
+    var params = {
+      startTask: 'CERTIFICATION_NAME',
+      name: name,
+      organizationName: 'Nexor Skill',
+      issueYear: date.getFullYear(),
+      issueMonth: date.getMonth()+1,
+      certUrl: certUrl,
+      certId: profileSlug()
+    };
+    return 'https://www.linkedin.com/profile/add?'+Object.keys(params).map(function(k){
+      return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);
+    }).join('&');
+  }
+
   function renderAvatars(){
     var initial = (state.userName||'G').trim().charAt(0).toUpperCase() || 'G';
     var pAv = document.getElementById('pAvatar'), tAv = document.getElementById('avatarBtn');
@@ -1791,7 +1868,10 @@
         card.innerHTML='<div class="bic" style="background:'+th.bg+';color:'+th.fg+';">'+ic(p.icon,20)+'</div>'+
           '<div class="blabel">CERTIFICATION</div><h4>'+p.title+'</h4>'+
           '<div class="issued">Earned '+fmtDate(cert.date)+'</div><div class="issuer">Nexor Cloud</div>'+
-          '<button class="badge-share-btn">'+ic('share',13)+'<span>Share</span></button>';
+          '<div class="btn-row" style="margin-top:6px;">'+
+            '<button class="badge-share-btn">'+ic('share',13)+'<span>Share</span></button>'+
+            '<a class="badge-share-btn" target="_blank" rel="noopener" href="'+linkedInAddUrl(p.title+' Certification', cert.date, shareUrl('cert', cert.pathId))+'"><span>Add to LinkedIn</span></a>'+
+          '</div>';
         var certShareBtn = card.querySelector('.badge-share-btn');
         certShareBtn.addEventListener('click', function(){ shareLink(shareUrl('cert', cert.pathId), p.title+' certification — Nexor Skill', certShareBtn); });
         certGrid.appendChild(card);
@@ -1811,7 +1891,10 @@
         card.innerHTML='<div class="bic" style="background:'+th.bg+';color:'+th.fg+';">'+ic(c.icon,20)+'</div>'+
           '<div class="blabel">'+(c.badgeName||'COMPLETION BADGE')+'</div><h4>'+c.title+'</h4>'+
           '<div class="issued">Earned '+fmtDate(b.date)+'</div><div class="issuer">Nexor Cloud</div>'+
-          '<button class="badge-share-btn">'+ic('share',13)+'<span>Share</span></button>';
+          '<div class="btn-row" style="margin-top:6px;">'+
+            '<button class="badge-share-btn">'+ic('share',13)+'<span>Share</span></button>'+
+            '<a class="badge-share-btn" target="_blank" rel="noopener" href="'+linkedInAddUrl(c.title+' Badge', b.date, shareUrl('badge', b.courseId))+'"><span>Add to LinkedIn</span></a>'+
+          '</div>';
         var badgeShareBtn = card.querySelector('.badge-share-btn');
         badgeShareBtn.addEventListener('click', function(){ shareLink(shareUrl('badge', b.courseId), c.title+' badge — Nexor Skill', badgeShareBtn); });
         grid.appendChild(card);
@@ -1856,10 +1939,12 @@
     var navKey = map[v];
     if(navKey){ var navBtn = document.querySelector('.nav button[data-view="'+navKey+'"]'); if(navBtn) navBtn.classList.add('active'); }
     if(v==='home') renderPathGrids();
-    if(v==='library') renderCards();
-    if(v==='commons'){ renderPathGrids(); renderDocsGrid(); renderPoliciesGrid(); }
+    if(v==='library'){ renderCards(); renderRecommendations(); }
+    if(v==='commons'){ renderPathGrids(); renderDocsGrid(); renderPoliciesGrid(); renderLeaderboard(); }
     if(v==='profile') renderProfile();
     if(v==='settings') renderSettings();
+    if(v==='library') setSeoMeta('Course library | Nexor Skill', 'Browse AI courses, learning paths and certifications on Nexor Skill.', '/');
+    if(v==='commons') setSeoMeta('Commons — leaderboard & learning paths | Nexor Skill', 'The Nexor Skill leaderboard, learning paths, docs and policies.', '/');
   }
   document.querySelectorAll('.nav button[data-view]').forEach(function(btn){
     btn.addEventListener('click', function(){ setView(btn.getAttribute('data-view')); });
@@ -1954,6 +2039,7 @@
     var uid = user.uid, handle = state.userHandle;
     function afterDelete(){
       db.ref('users/'+uid+'/nexorSkillProgress').remove().catch(function(){});
+      db.ref('publicProfiles/'+uid).remove().catch(function(){});
       if(handle) db.ref('handleIndex/'+handle).remove().catch(function(){});
       setView('library');
     }
@@ -2085,7 +2171,30 @@
         notifPrefs: state.notifPrefs,
         profileImage: state.profileImage || null
       }).catch(function(e){ console.warn('Nexor Skill: could not save progress', e); });
+      syncPublicProfileMirror();
     }, 500);
+  }
+
+  // ---------------- public profile mirror ----------------
+  // Only fields that are safe to expose publicly (no email, no uid-sensitive data)
+  // live under publicProfiles/{uid}. Firebase rules should allow public READ on this
+  // node only, and WRITE only by the owning uid. This is what /dev/:handle reads, and
+  // what the leaderboard is ranked from — keeps the private users/ tree untouched.
+  function syncPublicProfileMirror(){
+    if(!state.uid) return;
+    var mirrorRef = db.ref('publicProfiles/'+state.uid);
+    if(!state.publicProfile || !state.userHandle){ mirrorRef.remove().catch(function(){}); return; }
+    var points = state.earnedBadges.length*BADGE_POINTS + state.earnedCerts.length*CERT_POINTS;
+    mirrorRef.set({
+      handle: state.userHandle,
+      name: state.userName,
+      isDeveloper: state.isDeveloper,
+      memberSince: state.memberSince || null,
+      profileImage: state.profileImage || null,
+      points: points,
+      badges: state.earnedBadges.map(function(b){ return {courseId:b.courseId, date:b.date.toISOString()}; }),
+      certs: state.earnedCerts.map(function(c){ return {pathId:c.pathId, date:c.date.toISOString()}; })
+    }).catch(function(e){ console.warn('Nexor Skill: could not sync public profile', e); });
   }
 
   auth.onAuthStateChanged(function(user){
@@ -2109,7 +2218,7 @@
           state.earnedBadges = (prog.earnedBadges||[]).map(function(b){ return {courseId:b.courseId, date:new Date(b.date)}; });
           state.earnedCerts = (prog.earnedCerts||[]).map(function(c){ return {pathId:c.pathId, date:new Date(c.date)}; });
           state.profileImage = prog.profileImage || null;
-          renderCards(); renderPathGrids(); renderAvatars();
+          renderCards(); renderPathGrids(); renderAvatars(); renderRecommendations(); syncPublicProfileMirror();
           if(state.view==='profile') renderProfile();
           if(state.view==='settings') renderSettings();
         });
@@ -2120,7 +2229,7 @@
       state.userName = 'Guest'; state.userHandle=''; state.userEmail=''; state.memberSince='';
       state.publicProfile = false; state.notifPrefs = {badge:true, newCourse:false, product:false};
       state.completedCourses = {}; state.earnedBadges = []; state.earnedCerts = []; state.profileImage = null;
-      renderCards(); renderPathGrids(); renderAvatars();
+      renderCards(); renderPathGrids(); renderAvatars(); renderRecommendations(); syncPublicProfileMirror();
       if(state.view==='profile') renderProfile();
       if(state.view==='settings') renderSettings();
     }
@@ -2197,8 +2306,193 @@
     if(e.key==='Enter'){ document.getElementById('kaiSend').click(); }
   });
 
-  // ---------------- init ----------------
-  renderCards();
+  // ---------------- SEO: keep <title>/meta in sync with what's on screen ----------------
+  // Crawlers that don't run JS still get the Cloudflare Pages Function's version for
+  // /dev/* (see functions/dev/[[slug]].js); this covers the in-app title/description
+  // for browser tabs, browser history, and JS-capable crawlers like Googlebot.
+  function setSeoMeta(title, desc, path){
+    document.getElementById('pageTitle').textContent = title;
+    document.getElementById('metaDesc').setAttribute('content', desc);
+    document.getElementById('ogTitle').setAttribute('content', title);
+    document.getElementById('ogDesc').setAttribute('content', desc);
+    var url = 'https://skills.kashishai.com'+(path||'/');
+    document.getElementById('ogUrl').setAttribute('content', url);
+    document.getElementById('twTitle').setAttribute('content', title);
+    document.getElementById('twDesc').setAttribute('content', desc);
+    document.getElementById('canonicalLink').setAttribute('href', url);
+  }
+
+  // ---------------- LEADERBOARD (exclusive feature #1) ----------------
+  function leaderboardCardHtml(entry, rank){
+    var initial = (entry.name||'?').trim().charAt(0).toUpperCase() || '?';
+    var avatar = entry.profileImage
+      ? '<img src="'+entry.profileImage+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" alt="">'
+      : '<div style="width:36px;height:36px;border-radius:50%;background:var(--lav);color:var(--lav-ic);display:flex;align-items:center;justify-content:center;font-weight:600;">'+initial+'</div>';
+    return '<div class="doc-card" data-handle="'+entry.handle+'" style="display:flex;align-items:center;gap:12px;cursor:pointer;">'+
+      '<div style="font-size:15px;color:var(--muted-2);width:20px;flex:none;">#'+rank+'</div>'+
+      avatar+
+      '<div style="min-width:0;flex:1;">'+
+        '<h4 style="margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+entry.name+(entry.isDeveloper?' 🛠️':'')+'</h4>'+
+        '<p style="margin:0;">'+entry.points+' pts · '+(entry.badges?entry.badges.length:0)+' badges · '+(entry.certs?entry.certs.length:0)+' certs</p>'+
+      '</div>'+
+    '</div>';
+  }
+  function renderLeaderboard(){
+    var grid = document.getElementById('leaderboardGrid'), empty = document.getElementById('leaderboardEmpty');
+    if(!grid) return;
+    grid.innerHTML = '<p style="color:var(--muted-2);grid-column:1/-1;">Loading leaderboard…</p>';
+    db.ref('publicProfiles').orderByChild('points').limitToLast(20).once('value').then(function(snap){
+      var rows = [];
+      snap.forEach(function(child){ rows.push(child.val()); });
+      rows.reverse(); // highest points first
+      grid.innerHTML='';
+      if(rows.length===0){ empty.style.display='block'; return; }
+      empty.style.display='none';
+      rows.forEach(function(entry, i){
+        var el = document.createElement('div');
+        el.innerHTML = leaderboardCardHtml(entry, i+1);
+        var card = el.firstChild;
+        card.addEventListener('click', function(){ history.pushState({}, '', '/dev/'+entry.handle); loadPublicProfile(entry.handle); });
+        grid.appendChild(card);
+      });
+    }).catch(function(e){
+      console.warn('Nexor Skill: could not load leaderboard', e);
+      grid.innerHTML = '<p style="color:var(--muted-2);grid-column:1/-1;">Leaderboard needs Firebase read access on publicProfiles — check database rules.</p>';
+    });
+  }
+
+  // ---------------- AI COURSE RECOMMENDATIONS (exclusive feature #2) ----------------
+  // Rule-based "recommended for you": highest-progress unfinished path, next
+  // unfinished course in it, matched against the learner's own completions.
+  // (Kashish AI chat next to it can explain *why* — see kaiHandle.)
+  function computeRecommendations(){
+    if(!state.signedIn) return [];
+    var scored = PATHS.map(function(p){
+      var prog = pathProgress(p.id);
+      return {path:p, prog:prog, ratio: prog.total? prog.done/prog.total : 0};
+    }).filter(function(x){ return x.prog.done < x.prog.total; })
+      .sort(function(a,b){ return b.ratio - a.ratio; });
+    if(scored.length===0) return [];
+    var top = scored[0].path;
+    var nextCourseId = top.courses.find(function(cid){ return !state.completedCourses[cid]; });
+    var recs = [];
+    if(nextCourseId) recs.push({type:'course', id:nextCourseId});
+    recs.push({type:'path', id:top.id});
+    return recs;
+  }
+  function renderRecommendations(){
+    var block = document.getElementById('recoBlock'), grid = document.getElementById('recoGrid');
+    if(!block) return;
+    var recs = computeRecommendations();
+    if(recs.length===0){ block.style.display='none'; return; }
+    block.style.display='block'; grid.innerHTML='';
+    recs.forEach(function(r){
+      if(r.type==='course'){
+        var c = COURSES[r.id]; var th = THEMES[c.theme];
+        var div = document.createElement('div'); div.className='path-card';
+        div.innerHTML = '<div class="path-ic" style="background:'+th.bg+';color:'+th.fg+';">'+ic(c.icon,20)+'</div>'+
+          '<h3>Continue: '+c.title+'</h3><p>'+c.desc+'</p>'+
+          '<div class="path-foot"><span>'+c.level+'</span><span>Pick up where you left off</span></div>';
+        div.addEventListener('click', function(){ openCourse(r.id); });
+        grid.appendChild(div);
+      } else {
+        var p = PATHS.find(function(x){return x.id===r.id;}); var prog = pathProgress(p.id); var th2 = THEMES[p.theme];
+        var div2 = document.createElement('div'); div2.className='path-card';
+        div2.innerHTML = '<div class="path-ic" style="background:'+th2.bg+';color:'+th2.fg+';">'+ic(p.icon,20)+'</div>'+
+          '<h3>Finish the path: '+p.title+'</h3><p>'+p.desc+'</p>'+
+          '<div class="path-foot"><span>'+prog.done+'/'+prog.total+' done</span><span>Earns a certification</span></div>';
+        div2.addEventListener('click', function(){ openPath(p.id); });
+        grid.appendChild(div2);
+      }
+    });
+  }
+
+  // ---------------- PUBLIC PROFILE route: /dev/:handle ----------------
+  function parseDevPath(path){
+    var m = path.match(/^\/dev\/([a-zA-Z0-9_]+)(?:\/(badge|cert)\/([a-zA-Z0-9_-]+))?\/?$/);
+    if(!m) return null;
+    return {handle:m[1], kind:m[2]||null, itemId:m[3]||null};
+  }
+  function loadPublicProfile(handle){
+    setView('publicProfile');
+    document.getElementById('publicProfileBody').style.display='none';
+    document.getElementById('publicProfileNotFound').style.display='none';
+    db.ref('handleIndex/'+handle).once('value').then(function(hSnap){
+      var hVal = hSnap.exists()?hSnap.val():null;
+      var uid = typeof hVal==='string'?hVal:(hVal&&hVal.uid?hVal.uid:null);
+      if(!uid) throw new Error('no-user');
+      return db.ref('publicProfiles/'+uid).once('value');
+    }).then(function(pSnap){
+      if(!pSnap.exists()) throw new Error('not-public');
+      renderPublicProfile(handle, pSnap.val());
+    }).catch(function(){
+      document.getElementById('publicProfileNotFound').style.display='block';
+      setSeoMeta('Profile not found | Nexor Skill', 'This developer profile is private or does not exist.', '/dev/'+handle);
+    });
+  }
+  function renderPublicProfile(handle, entry){
+    document.getElementById('publicProfileBody').style.display='block';
+    var initial = (entry.name||'?').trim().charAt(0).toUpperCase() || '?';
+    var ppAvatar = document.getElementById('ppAvatar');
+    if(entry.profileImage) ppAvatar.innerHTML = '<img src="'+entry.profileImage+'" alt="">'; else ppAvatar.textContent = initial;
+    document.getElementById('ppName').textContent = entry.name + (entry.isDeveloper?' · Developer Profile':'');
+    document.getElementById('ppHandle').textContent = 'skills.kashishai.com/dev/'+handle;
+    document.getElementById('ppTags').innerHTML = entry.isDeveloper
+      ? '<span class="p-tag">Developer Profile</span><span class="p-tag">Nexor Skill member</span>'
+      : '<span class="p-tag">Learner profile</span>';
+    var badges = entry.badges||[], certs = entry.certs||[];
+    document.getElementById('ppStatBadges').textContent = badges.length;
+    document.getElementById('ppStatCerts').textContent = certs.length;
+    document.getElementById('ppStatPoints').textContent = entry.points||0;
+
+    var certGrid = document.getElementById('ppCertGrid');
+    document.getElementById('ppCertCountLbl').textContent = certs.length+' earned';
+    certGrid.innerHTML = certs.length===0 ? '<div class="empty-badges" style="grid-column:1/-1;">No certifications yet.</div>' : '';
+    certs.slice().reverse().forEach(function(cert){
+      var p = PATHS.find(function(x){return x.id===cert.pathId;}); if(!p) return;
+      var th = THEMES[p.theme]; var d = new Date(cert.date);
+      var card = document.createElement('div'); card.className='badge-card cert-card';
+      card.innerHTML = '<div class="bic" style="background:'+th.bg+';color:'+th.fg+';">'+ic(p.icon,20)+'</div>'+
+        '<div class="blabel">CERTIFICATION</div><h4>'+p.title+'</h4>'+
+        '<div class="issued">Earned '+fmtDate(d)+'</div><div class="issuer">Nexor Cloud</div>';
+      certGrid.appendChild(card);
+    });
+
+    var badgeGrid = document.getElementById('ppBadgeGrid'), ppEmpty = document.getElementById('ppEmptyBadges');
+    document.getElementById('ppBadgeCountLbl').textContent = badges.length+' earned';
+    badgeGrid.innerHTML=''; ppEmpty.style.display = badges.length===0 ? 'block' : 'none';
+    badges.slice().reverse().forEach(function(b){
+      var c = COURSES[b.courseId]; if(!c) return;
+      var th = THEMES[c.theme]; var d = new Date(b.date);
+      var card = document.createElement('div'); card.className='badge-card';
+      card.innerHTML = '<div class="bic" style="background:'+th.bg+';color:'+th.fg+';">'+ic(c.icon,20)+'</div>'+
+        '<div class="blabel">'+(c.badgeName||'COMPLETION BADGE')+'</div><h4>'+c.title+'</h4>'+
+        '<div class="issued">Earned '+fmtDate(d)+'</div><div class="issuer">Nexor Cloud</div>';
+      badgeGrid.appendChild(card);
+    });
+
+    setSeoMeta(
+      entry.name+' — Nexor Skill developer profile',
+      entry.name+' has earned '+certs.length+' certification(s) and '+badges.length+' badge(s) on Nexor Skill.',
+      '/dev/'+handle
+    );
+  }
+  document.getElementById('backFromPublicProfile').addEventListener('click', function(){
+    history.pushState({}, '', '/'); setView('library');
+  });
+
+  // ---------------- init / routing ----------------
+  var initialRoute = parseDevPath(location.pathname);
+  if(initialRoute){
+    renderCards(); renderPathGrids(); // warm caches so switching back to the app is instant
+    loadPublicProfile(initialRoute.handle);
+  } else {
+    renderCards();
+  }
+  window.addEventListener('popstate', function(){
+    var r = parseDevPath(location.pathname);
+    if(r) loadPublicProfile(r.handle); else setView('library');
+  });
 })();
 </script>
 </body>
