@@ -393,6 +393,7 @@
         <div class="side-item difficulty-filter checked" data-level="Any"><span class="chk on">✓</span><span class="lbl">Any</span></div>
         <div class="side-item difficulty-filter" data-level="Beginner"><span class="chk"></span><span class="lbl">Beginner</span></div>
         <div class="side-item difficulty-filter" data-level="Intermediate"><span class="chk"></span><span class="lbl">Intermediate</span></div>
+        <div class="side-item difficulty-filter" data-level="Advanced"><span class="chk"></span><span class="lbl">Advanced</span></div>
       </aside>
 
       <div class="cards" id="cardsWrap"></div>
@@ -485,7 +486,7 @@
       </div>
       <div class="p-info">
         <h2 id="pName">Guest learner</h2>
-        <div class="handle" id="pHandle">nexorskill.com/dev/guest</div>
+        <div class="handle" id="pHandle">skills.kashishai.com/dev/guest</div>
         <div class="tags" id="pTags"><span class="p-tag">Not yet a Developer Profile</span></div>
       </div>
       <div class="p-stats">
@@ -769,7 +770,10 @@
       courses:['how-kashish-works','ai-limits','responsible-ai'] },
     { id:'business-ai', theme:'tan', icon:'growth', title:'Business with AI',
       desc:'Apply Kashish AI to real business problems: strategy, planning, and day-to-day operations.',
-      courses:['llc-guide','cashflow','poke-holes'] }
+      courses:['llc-guide','cashflow','poke-holes'] },
+    { id:'ai-foundations-nexor', theme:'lav', icon:'brain', title:'AI Foundations with Nexor',
+      desc:'Understand AI, build with AI, and create your first AI-powered products — 15 modules from core concepts through a production-style capstone.',
+      courses:['nexor-m1-intro-ai','nexor-m2-how-ai-works','nexor-m3-generative-ai','nexor-m4-prompt-engineering','nexor-m5-ai-apis','nexor-m6-first-chatbot','nexor-m7-ai-databases','nexor-m8-rag','nexor-m9-ai-agents','nexor-m10-ai-search','nexor-m11-ai-safety','nexor-m12-ai-product-dev','nexor-m13-ai-for-business','nexor-m14-production-ai-app','nexor-m15-capstone'] }
   ];
 
   function L(title, blocks){ return {title:title, body:blocks}; }
@@ -965,6 +969,336 @@
       quiz:[
         {q:'What is the main value of asking an AI to poke holes in your strategy?', opts:['It gives a final yes or no verdict','It surfaces assumptions you might be avoiding','It writes the plan for you'], correct:1},
         {q:'What should you do once you find the weakest assumption?', opts:['Ignore it and proceed','Test it cheaply before scaling','Abandon the plan immediately'], correct:1}
+      ] },
+
+    'nexor-m1-intro-ai': { theme:'lav', icon:'brain', skill:'AI', level:'Beginner', pct:0, votes:0, badgeName:'NEXOR AI FUNDAMENTALS',
+      title:'Introduction to Artificial Intelligence', cat:'AI Foundations with Nexor, Module 1 of 15',
+      desc:'What AI actually is, how narrow AI differs from generative AI, and the vocabulary you need before anything else in this path makes sense.',
+      lessons:[
+        L('What AI is, and what it is not', [
+          ['p','Artificial intelligence is software that performs tasks which normally need human judgment, recognizing a face, translating a sentence, writing a paragraph, by learning patterns from data rather than following rules a person typed in by hand.'],
+          ['p','Narrow AI does one job well, spam filtering, route planning, and cannot step outside it. Generative AI produces new content, text, images, audio, code, based on patterns learned from huge amounts of existing material.']
+        ]),
+        L('A short history, and where we are now', [
+          ['ul',['Machine learning: systems that improve at a task by learning from examples instead of explicit rules.','Deep learning: machine learning using layered neural networks, the approach behind most modern AI.','AI agents and assistants: systems that can take multi-step action, not just answer a single question.']],
+          ['p','Each wave did not replace the last, it sits on top of it. Today\'s assistants combine deep learning models with tools, memory, and step-by-step reasoning.']
+        ]),
+        L('Where AI already shows up', [
+          ['call','Practice task: list five AI-powered features you already use in apps you have open right now, search suggestions, photo tagging, spam filters, and note which feel like narrow AI versus generative AI.'],
+          ['p','Recognizing this distinction, narrow versus generative, is the single most useful piece of vocabulary for the rest of this course, so revisit this lesson if a later module assumes it.']
+        ])
+      ],
+      quiz:[
+        {q:'What is the key difference between narrow AI and generative AI?', opts:['Narrow AI does one fixed task, generative AI produces new content','Narrow AI is newer than generative AI','There is no meaningful difference'], correct:0},
+        {q:'Deep learning is best described as:', opts:['A rule-based expert system','Machine learning using layered neural networks','A synonym for a database'], correct:1}
+      ] },
+
+    'nexor-m2-how-ai-works': { theme:'blue', icon:'puzzle', skill:'AI', level:'Beginner', pct:0, votes:0,
+      title:'How Modern AI Works', cat:'AI Foundations with Nexor, Module 2 of 15',
+      desc:'Datasets, training, tokens, and context windows, the mechanics behind a model in language a non-engineer can actually use.',
+      lessons:[
+        L('From data to a trained model', [
+          ['p','A model learns by being shown enormous amounts of data and adjusting millions or billions of internal numbers, called parameters, until its predictions get closer to correct. That adjustment process is training; using the finished model to produce an answer is inference.'],
+          ['p','Training happens once, expensively, on specialized chips called GPUs. Inference happens every time you send a message, and is comparatively cheap and fast.']
+        ]),
+        L('Tokens, context windows, and embeddings', [
+          ['ul',['Token: a chunk of text, roughly three-quarters of a word on average, the unit a model actually reads and writes.','Context window: the maximum amount of text, in tokens, a model can consider at once, older content falls out of view once you exceed it.','Embedding: a numeric representation of meaning, letting a model judge that two pieces of text are related even if they share no exact words.']],
+          ['p','Most confusing model behavior traces back to one of these three: a reply that ignores something you said earlier is usually a context-window limit, not the model forgetting on purpose.']
+        ]),
+        L('Why this matters practically', [
+          ['call','Practice task: open a long conversation with an AI assistant, scroll to the very beginning, and estimate how much of it likely fell outside the context window by the time you reached the end.'],
+          ['p','Understanding tokens and context windows lets you diagnose, rather than just be frustrated by, an AI system that seems to have forgotten something you told it.']
+        ])
+      ],
+      quiz:[
+        {q:'What is a token, in the context of how AI models process text?', opts:['A security credential','A chunk of text the model reads and writes, roughly part of a word','A type of neural network'], correct:1},
+        {q:'If an AI assistant seems to forget something said much earlier in a long conversation, the most likely cause is:', opts:['It is being intentionally deceptive','The content fell outside the context window','The model was never trained on that topic'], correct:1}
+      ] },
+
+    'nexor-m3-generative-ai': { theme:'tan', icon:'sparkle', skill:'AI', level:'Beginner', pct:0, votes:0,
+      title:'Generative AI', cat:'AI Foundations with Nexor, Module 3 of 15',
+      desc:'The main categories of generative AI, text, image, speech, and multimodal, and how to talk about them accurately.',
+      lessons:[
+        L('The generative AI landscape', [
+          ['p','Large language models, LLMs, generate text by predicting the next token repeatedly. The same underlying idea, learned patterns producing new output, extends to image generation, speech synthesis, and video generation, each trained on a different type of data.'],
+          ['p','Multimodal systems accept and produce more than one type of content in a single exchange, for example reading an image and answering questions about it in text.']
+        ]),
+        L('What generative AI is good at, and where it struggles', [
+          ['ul',['Strong: drafting, summarizing, rephrasing, brainstorming variations, explaining a concept multiple ways.','Weak: precise arithmetic done silently, citing exact sources it cannot verify, and anything requiring information newer than what it was trained on.','Mixed: coding, strong at common patterns, weaker on unusual or highly specific requirements without guidance.']],
+          ['p','Knowing this list in advance saves you from either over-trusting a confident-sounding answer or under-using a tool that is genuinely strong at the task in front of you.']
+        ]),
+        L('Comparing outputs like a practitioner', [
+          ['call','Practice task: ask an AI assistant the same question three different ways, a plain question, a request for a numbered list, and a request for a one-paragraph summary, and compare how much the answer\'s usefulness changes.'],
+          ['p','The model did not get smarter between those three attempts, the request got clearer. That is the core skill the next module builds on.']
+        ])
+      ],
+      quiz:[
+        {q:'What do text, image, and speech generation models have in common at a technical level?', opts:['They all predict new content based on patterns learned from training data','They all require an internet connection to run','They are unrelated technologies with no shared foundation'], correct:0},
+        {q:'Generative AI models are generally weakest at:', opts:['Rephrasing a paragraph','Silent, precise multi-step arithmetic and citing unverifiable sources','Brainstorming variations of an idea'], correct:1}
+      ] },
+
+    'nexor-m4-prompt-engineering': { theme:'mint', icon:'pen', skill:'AI', level:'Intermediate', pct:0, votes:0, badgeName:'NEXOR PROMPT ENGINEER',
+      title:'Prompt Engineering', cat:'AI Foundations with Nexor, Module 4 of 15',
+      desc:'Structured, testable prompting: role, context, constraints, examples, and reasoning-oriented instructions, built into a personal prompt library.',
+      lessons:[
+        L('Beyond basic prompting', [
+          ['p','Where earlier lessons on Kashish AI covered task, context, and format, prompt engineering treats a prompt as something you test and refine like any other tool, not something you write once and hope works.'],
+          ['p','Five levers matter most: role, the perspective the model should answer from, constraints, hard limits on length or content, examples, showing rather than describing the output you want, and structured output, specifying exactly how the response should be organized.']
+        ]),
+        L('Reasoning-oriented prompting', [
+          ['ul',['Ask the model to work through a problem in steps before giving a final answer, this reduces careless errors on multi-step questions.','Ask it to state its assumptions explicitly, so you can catch a wrong assumption instead of a wrong-looking-right final answer.','For anything consequential, ask for a second pass: "check your own answer above for mistakes before finalizing it."']],
+          ['p','This costs a little more time per request, and meaningfully improves reliability on anything with more than one step.']
+        ]),
+        L('Build your prompt library', [
+          ['call','Project: build a personal prompt library, five to ten prompts you reuse for real tasks, each written with an explicit role, constraints, and, where useful, an example of the output format you want.'],
+          ['p','Save each prompt with a one-line note on when to use it. A tested library beats reinventing a prompt from scratch every time.']
+        ])
+      ],
+      quiz:[
+        {q:'What is the purpose of asking a model to state its assumptions explicitly?', opts:['To make the answer longer','So you can catch a wrong assumption instead of a confidently wrong final answer','It is required by every AI system'], correct:1},
+        {q:'A personal prompt library is most useful because it:', opts:['Replaces the need to think about a task','Saves and reuses prompts that are already known to work well','Is required before any AI system will respond'], correct:1}
+      ] },
+
+    'nexor-m5-ai-apis': { theme:'rose', icon:'laptop', skill:'AI', level:'Intermediate', pct:0, votes:0, badgeName:'NEXOR AI API BUILDER',
+      title:'Working With AI APIs', cat:'AI Foundations with Nexor, Module 5 of 15',
+      desc:'Requests, responses, authentication, and error handling: the mechanics of calling an AI model programmatically instead of through a chat window.',
+      lessons:[
+        L('What an API call actually does', [
+          ['p','An API, application programming interface, lets your own code send a request to a model and get a response back, instead of a person typing into a chat window. The request is typically JSON: your message, any instructions, and settings like how creative or focused the response should be.'],
+          ['p','An API key authenticates that request as belonging to your account. Treat it like a password, never put it in code that ships to a user\'s browser or a public repository.']
+        ]),
+        L('Requests, responses, and the things that go wrong', [
+          ['ul',['Rate limits: a cap on how many requests you can make in a given time window, exceeding it returns an error, not a slower response.','Error handling: a real application must handle a failed request gracefully, retry, show a message, never just crash.','Latency: the time between sending a request and getting a full response, it affects how you design the user experience around it.']],
+          ['p','Frontend and backend split naturally here: the backend holds the API key and makes the call, the frontend never sees the key directly.']
+        ]),
+        L('Make your first call', [
+          ['call','Lab: using any AI provider\'s documented API, send a single request with a system instruction and one user message, and print the response. Then deliberately trigger an error, an invalid key or a malformed request, and handle it without crashing.'],
+          ['p','Completion criteria: one successful call, and one handled failure, both demonstrated in working code.']
+        ])
+      ],
+      quiz:[
+        {q:'Why should an API key never be embedded in code that ships to a user\'s browser?', opts:['It slows down the page','Anyone who inspects the code could extract and misuse it','Browsers cannot store text'], correct:1},
+        {q:'Hitting a rate limit means:', opts:['Your request succeeded but was logged','You exceeded the allowed number of requests in a time window and got an error','The model is out of ideas'], correct:1}
+      ] },
+
+    'nexor-m6-first-chatbot': { theme:'lav', icon:'chatLang', skill:'AI', level:'Intermediate', pct:0, votes:0, badgeName:'NEXOR AI APPLICATION BUILDER',
+      title:'Build Your First AI Chatbot', cat:'AI Foundations with Nexor, Module 6 of 15',
+      desc:'Chatbot architecture end to end: system instructions, conversation history, and graceful error handling.',
+      lessons:[
+        L('The anatomy of a chatbot', [
+          ['p','A chatbot is a loop: take the user\'s message, add it to a running conversation history, send the whole history plus a system instruction to the model, display the reply, and append it to history for next time.'],
+          ['p','The system instruction sets the assistant\'s role and boundaries once, at the start, rather than repeating them in every message, it is not shown to the user but shapes every response.']
+        ]),
+        L('Memory is just history you manage', [
+          ['ul',['Short conversations: send the full history each time, it is simple and usually cheap enough.','Long conversations: you will eventually need to trim or summarize older turns to stay inside the context window.','Errors: a failed request should show the user a clear retry option, not silently drop their message.']],
+          ['p','There is no hidden memory beyond what you explicitly send, if a detail is not in the history sent with the request, the model has no way to know it.']
+        ]),
+        L('Build it', [
+          ['call','Project: build a functional chatbot with a persistent system instruction, growing conversation history, and a visible error state on a failed request.'],
+          ['p','Completion criteria: a multi-turn conversation where the assistant correctly references something said two or more messages earlier.']
+        ])
+      ],
+      quiz:[
+        {q:'What is the role of a system instruction in a chatbot?', opts:['It is shown to the user as the first message','It sets the assistant\'s role and boundaries for the whole conversation, without being shown to the user','It replaces the need for conversation history'], correct:1},
+        {q:'If a chatbot cannot recall something said three messages ago, the most likely cause is:', opts:['The model is malfunctioning','That message was not included in the history sent with the current request','Chatbots cannot handle more than one message'], correct:1}
+      ] },
+
+    'nexor-m7-ai-databases': { theme:'blue', icon:'doc', skill:'AI', level:'Intermediate', pct:0, votes:0,
+      title:'AI + Databases', cat:'AI Foundations with Nexor, Module 7 of 15',
+      desc:'Storing users, conversations, and preferences: SQL, NoSQL, and Firebase-style databases at the level an AI application actually needs.',
+      lessons:[
+        L('Why a chatbot needs a database at all', [
+          ['p','Without a database, every conversation disappears the moment the page refreshes, and there is no such thing as a returning, recognized user. A database gives an application persistent memory: accounts, saved conversations, and stored preferences.'],
+          ['p','SQL databases organize data into related tables with a fixed structure, strong for data with clear relationships. NoSQL databases, like Firebase\'s, store more flexible, document-shaped data, often faster to iterate on early in a project.']
+        ]),
+        L('What to store, and how', [
+          ['ul',['User accounts: identity and authentication, kept separate from application data.','Conversations: stored per user, usually as an ordered list of messages with timestamps.','Preferences: settings that should persist across sessions, tone, notification choices, visibility settings.']],
+          ['p','Retrieval, reading the right stored data back out efficiently, matters as much as storage. A well-structured database answers "give me this user\'s last ten conversations" in one query, not by scanning everything.']
+        ]),
+        L('Build it', [
+          ['call','Project: extend your chatbot from Module 6 with user accounts and stored conversation history, so a returning, signed-in user sees their previous conversation rather than starting blank.'],
+          ['p','Completion criteria: sign out, sign back in, and confirm prior conversation history is still there.']
+        ])
+      ],
+      quiz:[
+        {q:'What is the main practical difference between SQL and NoSQL databases for a new AI application?', opts:['SQL uses fixed, related tables; NoSQL stores more flexible, document-shaped data','NoSQL cannot store text','SQL is always faster'], correct:0},
+        {q:'Why should user authentication be kept separate from general application data?', opts:['It is not actually necessary','It keeps identity and access control cleanly separated from everything else the app stores','Databases cannot store both'], correct:1}
+      ] },
+
+    'nexor-m8-rag': { theme:'tan', icon:'search', skill:'AI', level:'Advanced', pct:0, votes:0, badgeName:'NEXOR RAG DEVELOPER',
+      title:'Retrieval-Augmented Generation', cat:'AI Foundations with Nexor, Module 8 of 15',
+      desc:'Embeddings, vector databases, chunking, and context injection: giving a model accurate, current answers grounded in your own documents.',
+      lessons:[
+        L('Why RAG exists', [
+          ['p','A model\'s core knowledge is fixed at training time and general-purpose, it does not know your company\'s internal documents, and it can hallucinate, state something confidently and incorrectly, especially on specific facts. Retrieval-Augmented Generation, RAG, fixes both by retrieving relevant text from your own documents and injecting it into the prompt before the model answers.'],
+          ['p','The model is not being retrained, it is being handed the right excerpt at the right moment, the way you might hand a colleague the relevant page before asking them a question.']
+        ]),
+        L('The RAG pipeline', [
+          ['ul',['Chunking: splitting documents into small, overlapping pieces, small enough to retrieve precisely, large enough to keep context intact.','Embeddings: converting each chunk into a numeric representation of its meaning.','Vector database: storing those embeddings so you can quickly find chunks similar in meaning to a user\'s question.','Context injection: inserting the retrieved chunks into the prompt, then asking the model to answer using only that material.']],
+          ['p','Good chunking, not a fancier model, is usually the highest-leverage fix when a RAG system\'s answers are poor.']
+        ]),
+        L('Build it', [
+          ['call','Project: build a simple document question-answering system: ingest a handful of text documents, chunk and embed them, store them in a vector database, and answer a user\'s question using retrieved context, with the model instructed to say so if the answer is not in the provided material.'],
+          ['p','Completion criteria: the system correctly declines to answer a question its documents do not cover, rather than guessing.']
+        ])
+      ],
+      quiz:[
+        {q:'What problem does RAG primarily solve?', opts:['Making a model respond faster','Grounding answers in specific, current, or private documents the model was not trained on','Reducing the cost of every single request to zero'], correct:1},
+        {q:'In a RAG pipeline, what is chunking?', opts:['Deleting old conversation history','Splitting documents into small, overlapping pieces suited for retrieval','Compressing images before upload'], correct:1}
+      ] },
+
+    'nexor-m9-ai-agents': { theme:'mint', icon:'lightning', skill:'AI', level:'Advanced', pct:0, votes:0, badgeName:'NEXOR AI AGENT BUILDER',
+      title:'AI Agents', cat:'AI Foundations with Nexor, Module 9 of 15',
+      desc:'Tools, planning, and multi-step agent loops: how an AI system moves from answering questions to taking action.',
+      lessons:[
+        L('From answering to acting', [
+          ['p','An AI agent is a system that can take a goal, break it into steps, call tools, functions like "search the web" or "send an email", to carry out each step, and decide what to do next based on the result, rather than producing one final answer in a single pass.'],
+          ['p','This loop, plan, act, observe, repeat, is what separates an agent from a chatbot. The model is still just predicting text, but that text can now include a decision to use a tool.']
+        ]),
+        L('Designing a reliable agent', [
+          ['ul',['Give it a small, well-described set of tools rather than a huge, vague one, agents fail more often from tool confusion than from reasoning mistakes.','Log every step, plan, tool call, result, so a failure is debuggable instead of a mystery.','Put a limit on how many steps an agent can take unsupervised, and a clear point where it should stop and ask a human.']],
+          ['p','Multi-step tasks fail most often at the handoff between steps, not within a single step, review those transitions first when something goes wrong.']
+        ]),
+        L('Build it', [
+          ['call','Project: build a simple AI agent with at least two tools, for example a calculator and a lookup function, that can plan and execute a multi-step task using them, with every step logged.'],
+          ['p','Completion criteria: give it a task that genuinely requires both tools in sequence, and confirm the log shows correct, ordered reasoning.']
+        ])
+      ],
+      quiz:[
+        {q:'What distinguishes an AI agent from a standard chatbot?', opts:['Agents use tools and take multi-step action toward a goal, deciding what to do next based on results','Agents cannot use language models','There is no real difference'], correct:0},
+        {q:'Why is logging every step of an agent\'s process important?', opts:['It is required by every AI provider','It makes a multi-step failure debuggable instead of a mystery','It speeds up the agent\'s execution'], correct:1}
+      ] },
+
+    'nexor-m10-ai-search': { theme:'rose', icon:'target', skill:'AI', level:'Intermediate', pct:0, votes:0,
+      title:'AI Search', cat:'AI Foundations with Nexor, Module 10 of 15',
+      desc:'How AI search differs from traditional search: retrieval, citations, source verification, and preventing confident wrong answers.',
+      lessons:[
+        L('Traditional search versus AI search', [
+          ['p','Traditional search returns a ranked list of links and leaves the reading and synthesis to the user. AI search retrieves relevant sources and then has a model summarize or answer directly, with the sources cited, shifting the effort from finding information to verifying it.'],
+          ['p','This is powerful and risky in the same breath: a confident, well-written summary is easy to trust even when the underlying sources do not actually support it.']
+        ]),
+        L('Designing for verification, not just answers', [
+          ['ul',['Always surface the sources a citation is based on, not just the citation number, so a user can check it in one click.','Prefer showing "I could not find a reliable source for this" over a fluent guess.','Rank and weight sources, an official or primary source should outrank an unrelated forum post on the same topic.']],
+          ['p','The goal of an AI search feature is faster verification, not blind trust, design the interface to make checking a claim as easy as reading it.']
+        ]),
+        L('Build it', [
+          ['call','Project: build a simple AI search assistant that retrieves from a small, defined set of sources, answers with inline citations, and explicitly says when it found no supporting source for part of the question.'],
+          ['p','Completion criteria: ask it a question your source set does not cover, and confirm it says so rather than fabricating an answer.']
+        ])
+      ],
+      quiz:[
+        {q:'What is the main practical risk introduced by AI search compared to traditional search?', opts:['It is slower to load','A fluent, confident summary can be trusted even when its sources do not actually support it','It cannot show any sources at all'], correct:1},
+        {q:'A well-designed AI search assistant should, when it finds no supporting source:', opts:['Say so explicitly rather than guessing','Make up a plausible-sounding source','Refuse to answer any future questions'], correct:0}
+      ] },
+
+    'nexor-m11-ai-safety': { theme:'lav', icon:'shield', skill:'AI', level:'Intermediate', pct:0, votes:0, badgeName:'NEXOR AI SECURITY FUNDAMENTALS',
+      title:'AI Safety & Responsible AI', cat:'AI Foundations with Nexor, Module 11 of 15',
+      desc:'Privacy, bias, prompt injection, and human oversight: the responsible-AI judgment calls every builder eventually faces.',
+      lessons:[
+        L('The core risk categories', [
+          ['p','Responsible AI work covers several distinct risks: privacy, what data a system collects and how it is stored; bias, a model reproducing unfair patterns present in its training data; hallucination, confident but incorrect output; and prompt injection, malicious instructions hidden in content a system reads, aimed at hijacking its behavior.'],
+          ['p','These are not solved once and forgotten, they are ongoing design constraints revisited every time a system\'s scope changes.']
+        ]),
+        L('Human oversight, by design', [
+          ['ul',['Keep a human accountable for any consequential decision, anything touching money, health, legal standing, or someone\'s rights.','Design for the system being wrong sometimes, make correction and undo cheap, not an afterthought.','Treat any content a system reads from an external, untrusted source, a webpage, an uploaded file, as potentially containing hidden instructions, and never let it silently override your own system instructions.']],
+          ['p','Most real AI safety failures are design failures, not model failures, the model behaved as trained, the system around it did not have the right guardrails.']
+        ]),
+        L('Apply it', [
+          ['call','Practice task: take a fictional company\'s AI support agent and write down three concrete guardrails you would add before letting it take real actions on customer accounts, and why each one matters.'],
+          ['p','There is no single right list, the discipline is in reasoning through consequences before something goes live, not after.']
+        ])
+      ],
+      quiz:[
+        {q:'What is prompt injection?', opts:['A type of database backup','Malicious instructions hidden in content an AI system reads, aimed at hijacking its behavior','A method for training models faster'], correct:1},
+        {q:'For consequential decisions, money, health, legal standing, best practice is to:', opts:['Let the AI system decide fully automatically','Keep a human accountable for the final call','Avoid using AI for anything related to those topics'], correct:1}
+      ] },
+
+    'nexor-m12-ai-product-dev': { theme:'blue', icon:'growth', skill:'AI', level:'Intermediate', pct:0, votes:0, badgeName:'NEXOR AI PRODUCT BUILDER',
+      title:'AI Product Development', cat:'AI Foundations with Nexor, Module 12 of 15',
+      desc:'From use case to MVP: product-market fit, AI-specific UX, latency, reliability, and cost management for AI features.',
+      lessons:[
+        L('Finding a use case worth building', [
+          ['p','Not every problem needs AI, and not every AI capability is a product. A good AI use case has a clear, repeated task, a cost of being occasionally wrong that the user can tolerate or easily correct, and a workflow where AI genuinely saves more time than it costs to verify.'],
+          ['p','Start from the user\'s problem, not from the model\'s capability, "what is slow or annoying today" beats "what could this model technically do."']
+        ]),
+        L('Designing AI-specific UX', [
+          ['ul',['Always show the user what is AI-generated versus human-authored.','Give a fast, easy undo for anything the AI changed or suggested.','Design the loading and error states as carefully as the success state, latency and occasional failure are part of normal operation, not edge cases.']],
+          ['p','Cost and latency are product decisions, not just engineering ones, a slower, more expensive model is sometimes the wrong choice even if it is marginally more accurate.']
+        ]),
+        L('Design your MVP', [
+          ['call','Project: design an AI startup MVP, one clear use case, target user, the specific AI capability involved, and the UX for showing AI involvement and allowing correction. Write it as a one-page product brief.'],
+          ['p','Completion criteria: the brief names a use case a competitor without AI genuinely could not match as quickly, not just "add AI" to an existing product.']
+        ])
+      ],
+      quiz:[
+        {q:'What makes a use case genuinely suited to AI, rather than just AI for its own sake?', opts:['The model being the newest available version','A repeated task where being occasionally wrong is tolerable or easy to correct, and AI saves more time than it costs to verify','Any task a person currently does manually'], correct:1},
+        {q:'Why should loading and error states get as much design attention as the success state?', opts:['They rarely happen in practice','Latency and occasional failure are normal parts of how AI systems operate, not rare edge cases','Users never notice loading states'], correct:1}
+      ] },
+
+    'nexor-m13-ai-for-business': { theme:'tan', icon:'dollar', skill:'AI', level:'Intermediate', pct:0, votes:0, badgeName:'NEXOR AI AUTOMATION BUILDER',
+      title:'AI for Business', cat:'AI Foundations with Nexor, Module 13 of 15',
+      desc:'Applying AI to real operations: automation, customer support, marketing, sales, and internal knowledge systems.',
+      lessons:[
+        L('Where AI earns its keep in a business', [
+          ['p','The highest-value business applications of AI are usually unglamorous: drafting first responses to routine customer questions, summarizing long internal documents, tagging and routing incoming requests, and searching internal knowledge that used to live only in someone\'s head.'],
+          ['p','The common thread is volume plus repetition, tasks done often enough that a modest per-task time saving adds up to something significant.']
+        ]),
+        L('A simple framework for finding automation opportunities', [
+          ['ul',['List tasks done more than a few times a week that follow a recognizable pattern.','For each, estimate time spent per instance and how tolerant the task is of an occasional AI error.','Prioritize high-frequency, error-tolerant tasks first, they are the fastest, lowest-risk wins.']],
+          ['p','Internal knowledge systems, an AI that can answer questions from a company\'s own documents, are often the single highest-leverage first project, because the payoff compounds across every employee who uses it.']
+        ]),
+        L('Apply it', [
+          ['call','Project: for a fictional company of your choosing, design one AI workflow using the framework above, name the task, the frequency, the error tolerance, and the specific AI capability, RAG, chatbot, or automation, that fits it best.'],
+          ['p','Completion criteria: the workflow names a measurable outcome, time saved, response time reduced, not just "it will be more efficient."']
+        ])
+      ],
+      quiz:[
+        {q:'What two factors make a business task a strong candidate for AI automation?', opts:['High frequency and low tolerance for any error','High frequency and reasonable tolerance for an occasional error','Low frequency and high cost'], correct:1},
+        {q:'Why are internal knowledge systems often a high-leverage first AI project for a company?', opts:['They require no maintenance ever','The payoff compounds across every employee who uses them','They are the cheapest possible AI project'], correct:1}
+      ] },
+
+    'nexor-m14-production-ai-app': { theme:'mint', icon:'chart', skill:'AI', level:'Advanced', pct:0, votes:0, badgeName:'NEXOR AI FULL STACK BUILDER',
+      title:'Building a Production AI Application', cat:'AI Foundations with Nexor, Module 14 of 15',
+      desc:'Architecture, monitoring, security, and scaling: taking an AI application from a working demo to something reliable in production.',
+      lessons:[
+        L('What changes between a demo and production', [
+          ['p','A demo needs to work once, in front of you. A production application needs to work reliably for many users, under real load, with real failures, bad input, expired credentials, a provider outage, handled without taking the whole system down.'],
+          ['p','This is where earlier modules combine: the frontend and backend split from Module 5, the persistent storage from Module 7, and monitoring and logging that did not matter yet in a demo.']
+        ]),
+        L('The production checklist', [
+          ['ul',['Monitoring and logging: know when something breaks before a user has to tell you.','Security: API keys never exposed client-side, user data access properly scoped and authenticated.','Cost and latency management: caching repeated requests, setting sensible limits, and choosing the right model for each task rather than the most powerful one for everything.','Graceful degradation: a partial failure, one provider down, should degrade the experience, not crash it entirely.']],
+          ['p','Scaling an AI application is rarely about the model itself, it is almost always about the infrastructure and cost discipline around it.']
+        ]),
+        L('Ship it', [
+          ['call','Project: take an AI application you built earlier in this path and add production-style logging, authenticated and scoped data access, and at least one graceful-degradation path for a failed AI request.'],
+          ['p','Completion criteria: simulate a failed API call and confirm the application shows a clear, recoverable error rather than breaking.']
+        ])
+      ],
+      quiz:[
+        {q:'What is the main difference between a working demo and a production AI application?', opts:['Production applications use a different programming language','Production applications must handle real load, failures, and bad input reliably, not just work once','There is no meaningful difference'], correct:1},
+        {q:'"Graceful degradation" in a production AI application means:', opts:['The application crashes cleanly with a clear error code','A partial failure degrades the experience without crashing the whole system','The model automatically retrains itself'], correct:1}
+      ] },
+
+    'nexor-m15-capstone': { theme:'rose', icon:'badge', skill:'AI', level:'Advanced', pct:0, votes:0,
+      title:'Final Capstone: Original AI-Powered Product', cat:'AI Foundations with Nexor, Module 15 of 15',
+      desc:'Design, build, and document an original AI-powered product end to end, the requirement for the AI Foundations with Nexor certification.',
+      lessons:[
+        L('What the capstone requires', [
+          ['p','The capstone is not a new topic, it is the synthesis of everything from Module 1 through Module 14, applied to one original product idea you choose and carry through the full lifecycle: idea, architecture, build, and documentation.'],
+          ['p','Choose a real problem you understand well, a capstone grounded in a use case you actually care about is consistently stronger than one chosen only because it looks impressive.']
+        ]),
+        L('Required components', [
+          ['ul',['Product idea, target user, and the specific problem it solves.','Architecture: frontend, backend, database, and how the AI capability, chatbot, RAG, or agent, fits in.','Working UI with visible AI integration, and a data layer with authenticated, scoped access.','Basic security and monitoring, consistent with the production checklist from Module 14.','Documentation: what it does, how it works, and a short recorded or live demonstration.']],
+          ['p','This mirrors the LEARN, PRACTICE, BUILD, PROVE structure of the whole path, the capstone is the "prove" stage.']
+        ]),
+        L('Submit it', [
+          ['call','Project: build and document your original AI-powered product, then walk through it end to end, idea, architecture, build, demonstration, as if presenting to a small team deciding whether to fund it.'],
+          ['p','Completing this module, alongside every other course in this path, unlocks the AI Foundations with Nexor certification on your Developer Profile.']
+        ])
+      ],
+      quiz:[
+        {q:'What is the capstone project primarily meant to demonstrate?', opts:['Memorization of terminology from earlier modules','The ability to synthesize the whole path, idea through architecture to a documented, working product','Speed of typing'], correct:1},
+        {q:'What unlocks the AI Foundations with Nexor certification?', opts:['Completing only the capstone module','Completing every course in the path, including the capstone','Purchasing a separate certification exam'], correct:1}
       ] }
   };
 
@@ -1367,7 +1701,7 @@
   function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' EDT'; }
 
   function profileSlug(){ return state.userHandle || (state.userName||'guest').toLowerCase().replace(/\s+/g,'-'); }
-  function shareUrl(kind, id){ return 'https://nexorskill.com/dev/'+profileSlug()+'/'+kind+'/'+id; }
+  function shareUrl(kind, id){ return 'https://skills.kashishai.com/dev/'+profileSlug()+'/'+kind+'/'+id; }
 
   function renderAvatars(){
     var initial = (state.userName||'G').trim().charAt(0).toUpperCase() || 'G';
@@ -1407,14 +1741,14 @@
   function renderProfile(){
     renderAvatars();
     document.getElementById('pName').textContent = state.isDeveloper ? (state.userName+' · Developer Profile') : state.userName;
-    document.getElementById('pHandle').textContent = 'nexorskill.com/dev/'+profileSlug();
+    document.getElementById('pHandle').textContent = 'skills.kashishai.com/dev/'+profileSlug();
     document.getElementById('signedInName').textContent = state.userName;
 
     var shareProfileBtn = document.getElementById('shareProfileBtnProfile');
     shareProfileBtn.innerHTML = ic('share',14)+'<span>Share profile</span>';
     shareProfileBtn.onclick = function(){
       if(!state.publicProfile){ state.publicProfile = true; scheduleSaveProgress(); }
-      shareLink('https://nexorskill.com/dev/'+profileSlug(), state.userName+' — Nexor Skill profile', shareProfileBtn);
+      shareLink('https://skills.kashishai.com/dev/'+profileSlug(), state.userName+' — Nexor Skill profile', shareProfileBtn);
     };
 
     var editBtn = document.getElementById('pAvatarEditBtn');
@@ -1475,7 +1809,7 @@
         var c = COURSES[b.courseId]; var th = THEMES[c.theme];
         var card=document.createElement('div'); card.className='badge-card';
         card.innerHTML='<div class="bic" style="background:'+th.bg+';color:'+th.fg+';">'+ic(c.icon,20)+'</div>'+
-          '<div class="blabel">COMPLETION BADGE</div><h4>'+c.title+'</h4>'+
+          '<div class="blabel">'+(c.badgeName||'COMPLETION BADGE')+'</div><h4>'+c.title+'</h4>'+
           '<div class="issued">Earned '+fmtDate(b.date)+'</div><div class="issuer">Nexor Cloud</div>'+
           '<button class="badge-share-btn">'+ic('share',13)+'<span>Share</span></button>';
         var badgeShareBtn = card.querySelector('.badge-share-btn');
@@ -1564,7 +1898,7 @@
     vTog.classList.toggle('on', state.publicProfile);
     document.getElementById('shareLinkWrap').style.display = state.publicProfile ? 'block' : 'none';
     if(state.publicProfile){
-      document.getElementById('shareLinkInput').value = 'https://nexorskill.com/dev/'+profileSlug();
+      document.getElementById('shareLinkInput').value = 'https://skills.kashishai.com/dev/'+profileSlug();
     }
 
     document.getElementById('toggleBadgeEmails').classList.toggle('on', !!state.notifPrefs.badge);
