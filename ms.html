@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,22 +6,24 @@
 <title>Kashi Mascot</title>
 <style>
   :root{
-    --ink:#1c1330;
-    --paper:#f6f2ff;
-    --violet:#7c4fe0;
-    --violet-deep:#5a2fc9;
-    --glow:#c9a8ff;
-    --coral:#ff8f6b;
-    --line:#2a1b4d;
+    --ink:#2b2118;
+    --bg1:#efe4d6;
+    --bg2:#f7f1e6;
+    --fur:#f2e6d3;
+    --fur-shade:#e2d1b6;
+    --fur-deep:#cdb794;
+    --face:#fbf3e4;
+    --blush:#f4a89a;
+    --violet:#a98be0;
+    --gold:#e8b84b;
+    --teal:#6fb8c9;
+    --coral:#f28b7a;
   }
   *{box-sizing:border-box;}
   html,body{
     margin:0;
     height:100%;
-    background:
-      radial-gradient(circle at 20% 15%, #2a1b4d 0%, transparent 45%),
-      radial-gradient(circle at 85% 80%, #3a1f5c 0%, transparent 50%),
-      var(--ink);
+    background:radial-gradient(circle at 50% 30%, var(--bg2) 0%, var(--bg1) 100%);
     font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
     display:flex;
     align-items:center;
@@ -31,28 +33,28 @@
   .stage{
     position:relative;
     width:min(94vw, 420px);
-    padding:32px 24px 28px;
+    padding:28px 24px 26px;
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:18px;
+    gap:16px;
   }
   .bubble-wrap{
-    min-height:64px;
+    min-height:60px;
     width:100%;
     display:flex;
     justify-content:center;
   }
   .bubble{
-    max-width:290px;
-    background:var(--paper);
+    max-width:280px;
+    background:#fff;
     color:var(--ink);
-    padding:12px 16px;
-    border-radius:18px;
+    padding:11px 16px;
+    border-radius:16px;
     border-bottom-left-radius:4px;
     font-size:14.5px;
     line-height:1.4;
-    box-shadow:0 8px 24px rgba(0,0,0,.35);
+    box-shadow:0 8px 20px rgba(90,60,20,.15);
     opacity:0;
     transform:translateY(6px) scale(.96);
     transition:opacity .25s ease, transform .25s ease;
@@ -61,130 +63,158 @@
 
   .mascot-holder{
     position:relative;
-    width:170px;
-    height:170px;
+    width:200px;
+    height:230px;
   }
-  .halo{
+  .shadow-oval{
     position:absolute;
-    inset:-18px;
-    border-radius:50%;
-    background:radial-gradient(circle, var(--glow) 0%, transparent 70%);
-    opacity:.55;
-    filter:blur(2px);
-    animation:breathe 3.2s ease-in-out infinite;
-  }
-  @keyframes breathe{
-    0%,100%{transform:scale(.94); opacity:.45;}
-    50%{transform:scale(1.05); opacity:.7;}
+    bottom:-4px;
+    left:50%;
+    transform:translateX(-50%);
+    width:120px;
+    height:18px;
+    background:radial-gradient(ellipse, rgba(140,110,70,.22) 0%, transparent 70%);
   }
 
   .mascot{
     position:relative;
     width:100%;
     height:100%;
-    animation:bob 3.6s ease-in-out infinite;
+    animation:bob 4s ease-in-out infinite;
   }
   @keyframes bob{
-    0%,100%{transform:translateY(0) rotate(0deg);}
-    50%{transform:translateY(-8px) rotate(-1.5deg);}
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-7px);}
   }
 
-  .body{
+  /* single fuzzy silhouette: hood-head melts into rounded body */
+  .silhouette{
     position:absolute;
     inset:0;
-    border-radius:46% 54% 50% 50% / 55% 55% 45% 45%;
-    background:linear-gradient(155deg, var(--violet) 0%, var(--violet-deep) 65%);
-    box-shadow: inset -12px -16px 24px rgba(0,0,0,.25), inset 10px 14px 20px rgba(255,255,255,.12);
   }
-  .spark{
+  .silhouette svg{width:100%; height:100%; display:block;}
+
+  /* soft fuzzy texture overlay via many tiny radial dabs */
+  .fur-texture{
     position:absolute;
-    top:8%;
-    right:16%;
-    width:14px;
-    height:14px;
-    background:var(--coral);
-    clip-path:polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
-    animation:twinkle 2.4s ease-in-out infinite;
+    inset:0;
+    border-radius:50%;
+    mix-blend-mode:multiply;
+    opacity:.5;
+    pointer-events:none;
+    background-image:
+      radial-gradient(circle at 20% 30%, var(--fur-shade) 0 2px, transparent 3px),
+      radial-gradient(circle at 60% 15%, var(--fur-shade) 0 2px, transparent 3px),
+      radial-gradient(circle at 80% 45%, var(--fur-shade) 0 2px, transparent 3px),
+      radial-gradient(circle at 35% 70%, var(--fur-shade) 0 2px, transparent 3px),
+      radial-gradient(circle at 70% 80%, var(--fur-shade) 0 2px, transparent 3px);
+    background-size:60px 60px;
   }
-  @keyframes twinkle{
-    0%,100%{opacity:.4; transform:scale(.8) rotate(0deg);}
-    50%{opacity:1; transform:scale(1.15) rotate(25deg);}
+
+  .gem{
+    position:absolute;
+    border-radius:50%;
+    box-shadow:0 1px 2px rgba(0,0,0,.15);
+  }
+  .gem.star{
+    border-radius:0;
+    clip-path:polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
   }
 
   .face{
     position:absolute;
-    top:44%;
+    top:26%;
     left:50%;
-    transform:translate(-50%,-50%);
-    width:70%;
+    transform:translate(-50%,0);
+    width:58%;
+    height:34%;
     display:flex;
-    justify-content:space-between;
+    flex-direction:column;
     align-items:center;
+    justify-content:center;
+  }
+  .eyes{
+    display:flex;
+    gap:26px;
+    margin-bottom:8px;
   }
   .eye{
-    width:16px;
-    height:20px;
-    background:var(--paper);
+    width:11px;
+    height:11px;
+    background:var(--ink);
     border-radius:50%;
     position:relative;
-    animation:blink 4.6s infinite;
+    animation:blink 5s infinite;
   }
   .eye::after{
     content:'';
     position:absolute;
-    width:7px;
-    height:7px;
-    background:var(--ink);
+    width:3.5px;
+    height:3.5px;
+    background:#fff;
     border-radius:50%;
-    top:5px;
-    left:5px;
-    transition:transform .2s ease;
+    top:1.5px;
+    right:1px;
   }
   @keyframes blink{
     0%,92%,100%{transform:scaleY(1);}
     95%{transform:scaleY(.1);}
   }
-
-  .mouth-wrap{
+  .cheeks{
     position:absolute;
-    top:64%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    width:34px;
-    height:16px;
+    top:8px;
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    padding:0 2px;
+  }
+  .cheek{
+    width:20px;
+    height:12px;
+    background:var(--blush);
+    border-radius:50%;
+    opacity:.65;
+    filter:blur(1px);
+  }
+  .mouth-wrap{
+    width:22px;
+    height:12px;
   }
   .mouth{
     width:100%;
     height:100%;
-    background:var(--ink);
-    border-radius:0 0 16px 16px;
+    border-bottom:2.4px solid var(--ink);
+    border-radius:0 0 50% 50%;
     transform-origin:top center;
-    transition:height .12s ease, border-radius .12s ease, transform .12s ease;
+    transition:transform .12s ease, border-radius .12s ease, border-width .12s ease;
+  }
+  .mouth-wrap.open .mouth{
+    border-radius:50%;
+    border:2.4px solid var(--ink);
+    background:#7a5a4a;
+    transform:scaleY(1.3);
   }
 
   /* THINKING state */
-  .mascot-holder.thinking .mouth{
-    height:6px;
-    border-radius:6px;
-  }
-  .mascot-holder.thinking .body{animation:think-sway 1.1s ease-in-out infinite;}
+  .mascot-holder.thinking .mascot{animation:think-sway 1.1s ease-in-out infinite;}
   @keyframes think-sway{
-    0%,100%{transform:rotate(0deg);}
-    50%{transform:rotate(3deg);}
+    0%,100%{transform:rotate(0deg) translateY(0);}
+    50%{transform:rotate(2.5deg) translateY(-4px);}
   }
   .dots{
     position:absolute;
-    top:-6px;
+    top:-2px;
     left:50%;
     transform:translateX(-50%);
     display:none;
     gap:5px;
+    z-index:5;
   }
   .mascot-holder.thinking .dots{display:flex;}
   .dots span{
-    width:7px; height:7px;
+    width:6px; height:6px;
     border-radius:50%;
-    background:var(--glow);
+    background:var(--violet);
     animation:dot-pulse 1.1s ease-in-out infinite;
   }
   .dots span:nth-child(2){animation-delay:.15s;}
@@ -194,68 +224,61 @@
     50%{opacity:1; transform:translateY(-5px);}
   }
 
-  /* TALKING state — mouth animates via JS toggling this class */
-  .mouth-wrap.open .mouth{
-    height:16px;
-    border-radius:10px 10px 14px 14px;
-    transform:scaleY(1.15);
-  }
-
   .controls{
     width:100%;
     display:flex;
     gap:8px;
-    margin-top:4px;
+    margin-top:2px;
   }
   input[type=text]{
     flex:1;
     padding:12px 14px;
     border-radius:14px;
-    border:1px solid rgba(255,255,255,.15);
-    background:rgba(255,255,255,.06);
-    color:var(--paper);
+    border:1px solid rgba(90,60,20,.18);
+    background:#fff;
+    color:var(--ink);
     font-size:14px;
     outline:none;
   }
-  input[type=text]::placeholder{color:rgba(246,242,255,.45);}
-  input[type=text]:focus{border-color:var(--glow);}
+  input[type=text]::placeholder{color:rgba(43,33,24,.4);}
+  input[type=text]:focus{border-color:var(--violet);}
   button.send{
     padding:0 18px;
     border:none;
     border-radius:14px;
     background:var(--coral);
-    color:#2a1200;
+    color:#3a1204;
     font-weight:600;
     font-size:14px;
     cursor:pointer;
     transition:transform .12s ease, filter .12s ease;
   }
   button.send:active{transform:scale(.95);}
-  button.send:hover{filter:brightness(1.08);}
+  button.send:hover{filter:brightness(1.06);}
 
   .status{
     font-size:11.5px;
-    color:rgba(246,242,255,.4);
+    color:rgba(43,33,24,.45);
     letter-spacing:.02em;
     min-height:14px;
   }
 
   .voice-toggle{
     position:absolute;
-    top:10px;
-    right:10px;
-    background:none;
-    border:1px solid rgba(255,255,255,.2);
-    color:rgba(246,242,255,.7);
+    top:6px;
+    right:6px;
+    background:#fff;
+    border:1px solid rgba(90,60,20,.18);
+    color:var(--ink);
     font-size:11px;
     padding:5px 10px;
     border-radius:100px;
     cursor:pointer;
   }
   .voice-toggle.on{
-    background:var(--glow);
-    color:var(--ink);
-    border-color:var(--glow);
+    background:var(--violet);
+    color:#fff;
+    border-color:var(--violet);
   }
 </style>
 </head>
@@ -269,17 +292,59 @@
   </div>
 
   <div class="mascot-holder" id="mascotHolder">
-    <div class="halo"></div>
+    <div class="shadow-oval"></div>
     <div class="dots"><span></span><span></span><span></span></div>
+
     <div class="mascot">
-      <div class="body"></div>
-      <div class="spark"></div>
-      <div class="face">
-        <div class="eye"></div>
-        <div class="eye"></div>
+      <div class="silhouette">
+        <svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="furGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#f7eede"/>
+              <stop offset="100%" stop-color="#e9d9bc"/>
+            </linearGradient>
+          </defs>
+          <!-- one continuous hood+body silhouette -->
+          <path d="
+            M100,8
+            C60,8 34,38 34,80
+            C34,105 40,118 40,140
+            C22,150 12,172 12,198
+            C12,218 30,228 55,228
+            L145,228
+            C170,228 188,218 188,198
+            C188,172 178,150 160,140
+            C160,118 166,105 166,80
+            C166,38 140,8 100,8 Z
+          " fill="url(#furGrad)" stroke="#d9c39f" stroke-width="1.5"/>
+          <!-- arms -->
+          <path d="M40,150 C20,158 8,175 10,198 C11,208 20,212 27,206 C33,200 34,178 40,160 Z" fill="url(#furGrad)" stroke="#d9c39f" stroke-width="1.5"/>
+          <path d="M160,150 C180,158 192,175 190,198 C189,208 180,212 173,206 C167,200 166,178 160,160 Z" fill="url(#furGrad)" stroke="#d9c39f" stroke-width="1.5"/>
+          <!-- face plate -->
+          <path d="
+            M100,30
+            C72,30 55,52 55,82
+            C55,108 60,118 100,118
+            C140,118 145,108 145,82
+            C145,52 128,30 100,30 Z
+          " fill="#fbf3e4"/>
+        </svg>
       </div>
-      <div class="mouth-wrap" id="mouthWrap">
-        <div class="mouth"></div>
+
+      <div class="fur-texture"></div>
+
+      <div class="face">
+        <div class="cheeks">
+          <div class="cheek"></div>
+          <div class="cheek"></div>
+        </div>
+        <div class="eyes">
+          <div class="eye"></div>
+          <div class="eye"></div>
+        </div>
+        <div class="mouth-wrap" id="mouthWrap">
+          <div class="mouth"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -292,7 +357,35 @@
 </div>
 
 <script>
-const holder = document.getElementById('mascotHolder');
+  // sprinkle gems onto the mascot procedurally
+  const gemColors = ['#a98be0','#f28b7a','#e8b84b','#6fb8c9','#f5c6d6'];
+  const holder = document.querySelector('.mascot');
+  const gemCount = 26;
+  for (let i = 0; i < gemCount; i++){
+    const g = document.createElement('div');
+    const isStar = Math.random() < 0.25;
+    g.className = 'gem' + (isStar ? ' star' : '');
+    const size = 5 + Math.random() * 6;
+    g.style.width = size + 'px';
+    g.style.height = size + 'px';
+    g.style.background = gemColors[Math.floor(Math.random()*gemColors.length)];
+
+    // keep gems on the "body" band, avoid face oval roughly
+    let top, left;
+    do {
+      top = 30 + Math.random() * 62;   // % of 230 height
+      left = 8 + Math.random() * 84;   // % of 200 width
+    } while (top < 55 && left > 24 && left < 76); // dodge face area
+
+    g.style.top = top + '%';
+    g.style.left = left + '%';
+    g.style.opacity = 0.85 + Math.random()*0.15;
+    holder.appendChild(g);
+  }
+</script>
+
+<script>
+const mascotHolder = document.getElementById('mascotHolder');
 const mouthWrap = document.getElementById('mouthWrap');
 const bubble = document.getElementById('bubble');
 const input = document.getElementById('userInput');
@@ -312,12 +405,12 @@ voiceToggle.addEventListener('click', () => {
 function showBubble(text){
   bubble.textContent = text;
   bubble.classList.remove('show');
-  void bubble.offsetWidth; // restart transition
+  void bubble.offsetWidth;
   bubble.classList.add('show');
 }
 
 function setThinking(on){
-  holder.classList.toggle('thinking', on);
+  mascotHolder.classList.toggle('thinking', on);
   statusEl.textContent = on ? 'Kashi is thinking…' : '';
 }
 
@@ -326,16 +419,13 @@ function startMouthLoop(){
   mouthTimer = setInterval(() => {
     open = !open;
     mouthWrap.classList.toggle('open', open);
-  }, 140);
+  }, 150);
 }
-
 function stopMouthLoop(){
   clearInterval(mouthTimer);
   mouthWrap.classList.remove('open');
 }
 
-// Very small canned "brain" so this works standalone — swap this
-// for a real API call in production.
 function generateReply(msg){
   const m = msg.toLowerCase();
   if (!msg.trim()) return "Say something and I'll reply!";
@@ -361,14 +451,13 @@ function respond(userMsg){
     if (voiceOn && 'speechSynthesis' in window){
       const utter = new SpeechSynthesisUtterance(reply);
       utter.rate = 1.02;
-      utter.pitch = 1.15;
+      utter.pitch = 1.2;
       utter.onstart = startMouthLoop;
       utter.onend = stopMouthLoop;
       utter.onerror = stopMouthLoop;
       speechSynthesis.cancel();
       speechSynthesis.speak(utter);
     } else {
-      // simulate talking without audio so the mascot still animates
       startMouthLoop();
       setTimeout(stopMouthLoop, Math.min(2600, 500 + reply.length * 35));
     }
@@ -380,7 +469,6 @@ sendBtn.addEventListener('click', () => {
   input.value = '';
   respond(val);
 });
-
 input.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') sendBtn.click();
 });
