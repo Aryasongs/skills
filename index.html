@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexor Skill — Learning paths, docs & developer profiles | Kashish AI</title>
+<title>Nexor Skill — Course library, learning paths & developer profiles | Kashish AI</title>
+<!-- Firebase (compat SDK) — same shared auth/database project used by Kashish AI
+     and Nexor Sparks, so signing in here is the same account everywhere. -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -27,79 +32,105 @@
   :focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
   ::selection{background:var(--lav);color:#1a1a1d;}
   p{margin:0;}
+  svg{display:block;}
 
-  /* ---- topbar ---- */
+  /* ---- topbar (matches Home | Library | Commons layout) ---- */
   .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(18,18,20,.94);backdrop-filter:blur(8px);z-index:40;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',serif;font-size:19px;cursor:pointer;}
-  .brand .dot{width:17px;height:17px;border-radius:50%;background:conic-gradient(from 200deg,#e0645a,#e8b04b,#4d8a58,#3b6fb0);flex:none;}
-  .nav{display:flex;gap:2px;align-items:center;}
-  .nav button{background:none;border:none;color:var(--muted);padding:9px 15px;border-radius:10px;font-size:14px;}
+  .brand{display:flex;align-items:center;gap:9px;font-family:'Source Serif 4',serif;font-size:20px;cursor:pointer;}
+  .brand .dot{width:16px;height:16px;border-radius:50%;background:conic-gradient(from 200deg,#e0645a,#e8b04b,#4d8a58,#3b6fb0);flex:none;}
+  .nav{display:flex;gap:4px;align-items:center;}
+  .nav button{background:none;border:none;color:var(--muted);padding:9px 16px;border-radius:10px;font-size:14.5px;display:flex;align-items:center;gap:7px;}
   .nav button.active{background:var(--panel-2);color:var(--text);}
   .nav button:hover{color:var(--text);}
-  .top-right{display:flex;align-items:center;gap:10px;}
-  .streak{display:flex;align-items:center;gap:6px;background:var(--panel-2);padding:8px 12px;border-radius:20px;font-size:13px;color:var(--warn);border:1px solid var(--line);}
-  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#e0645a,#cdbdf3);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;color:#1a1a1d;border:none;}
+  .top-right{display:flex;align-items:center;gap:9px;}
+  .streak{display:flex;align-items:center;gap:6px;background:var(--panel-2);padding:8px 12px;border-radius:20px;font-size:13.5px;color:var(--warn);border:1px solid var(--line);}
+  .icon-btn{width:38px;height:38px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;padding:0;}
+  .icon-btn:hover{color:var(--text);border-color:var(--muted-2);}
+  .icon-btn.plus{background:#4d8a58;border:none;color:#0d1f12;}
+  .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#e0645a,#cdbdf3);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;color:#1a1a1d;border:none;padding:0;}
 
-  main{max-width:1180px;margin:0 auto;padding:38px 32px 110px;}
+  main{max-width:1180px;margin:0 auto;padding:40px 32px 110px;}
   .view{display:none;} .view.active{display:block;}
   .eyebrow{color:var(--lav);font-size:13px;margin-bottom:8px;}
   .btn{border-radius:20px;padding:10px 18px;font-size:13.5px;font-weight:500;border:1px solid var(--line);background:transparent;color:var(--text);white-space:nowrap;}
   .btn:hover{border-color:var(--muted-2);}
   .btn-primary{background:#f2f1ee;color:#16161a;border:none;display:inline-flex;align-items:center;gap:6px;}
   .btn-primary:hover{background:#fff;}
-  .btn-ghost{background:var(--panel-2);border:1px solid var(--line);}
 
-  /* ---- HOME ---- */
-  .hero{padding:54px 0 44px;border-bottom:1px solid var(--line);margin-bottom:40px;}
-  .hero h1{font-size:44px;line-height:1.15;font-weight:500;margin:0 0 16px;max-width:640px;}
-  .hero p{color:var(--muted);font-size:16.5px;max-width:520px;line-height:1.6;margin-bottom:26px;}
-  .stat-strip{display:flex;gap:36px;margin-top:34px;flex-wrap:wrap;}
-  .stat-strip div b{display:block;font-family:'Source Serif 4',serif;font-size:26px;font-weight:500;}
-  .stat-strip div span{color:var(--muted-2);font-size:12.5px;}
+  /* ---- LIBRARY (matches screenshot exactly) ---- */
+  .lib-head h1{font-size:38px;font-weight:500;margin:0 0 22px;}
+  .searchbar{display:flex;gap:12px;margin-bottom:28px;}
+  .searchbar .sw{flex:1;position:relative;}
+  .searchbar .sw svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted);}
+  .searchbar input{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 16px 13px 42px;color:var(--text);font-size:14.5px;}
+  .searchbar input:focus{border-color:var(--lav);}
+  .sortbtn{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0 16px;color:var(--muted);font-size:14px;display:flex;align-items:center;gap:8px;white-space:nowrap;}
 
-  .home-section{margin-bottom:52px;}
-  .home-section .section-h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px;}
-  .home-section .section-h h2{font-size:22px;font-weight:500;margin:0;}
-  .home-section .section-h button{background:none;border:none;color:var(--muted);font-size:13.5px;}
-  .home-section .section-h button:hover{color:var(--text);}
+  .lib-grid{display:grid;grid-template-columns:220px 1fr;gap:34px;align-items:start;}
+  @media (max-width:820px){ .lib-grid{grid-template-columns:1fr;} }
 
-  .path-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px;}
-  .path-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px;cursor:pointer;transition:border-color .15s;}
-  .path-card:hover{border-color:var(--muted-2);}
-  .path-ic{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;}
-  .path-card h3{font-size:16.5px;font-weight:600;margin:0;line-height:1.3;}
-  .path-card p{color:var(--muted);font-size:13.5px;line-height:1.5;}
-  .path-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:10px;font-size:12.5px;color:var(--muted-2);}
-  .progress-bar{height:5px;border-radius:4px;background:var(--panel-2);overflow:hidden;margin-top:6px;}
-  .progress-bar i{display:block;height:100%;background:var(--good);}
+  .side h4{font-size:11.5px;letter-spacing:.03em;color:var(--muted-2);margin:22px 0 8px;font-weight:600;}
+  .side-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;font-size:14.5px;color:var(--text);cursor:pointer;}
+  .side-item.tab-active{background:var(--panel-2);}
+  .side hr{border:none;border-top:1px solid var(--line);margin:16px 0;}
+  .chk{width:16px;height:16px;border-radius:5px;border:1.5px solid var(--muted-2);flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;color:#0d1f12;}
+  .chk.on{background:var(--good);border-color:var(--good);}
+  .side-item .lbl{flex:1;color:var(--muted);}
+  .side-item.tab-active .lbl, .side-item.checked .lbl{color:var(--text);}
 
-  .continue-row{display:flex;gap:14px;overflow-x:auto;padding-bottom:6px;}
-  .cont-card{flex:none;width:260px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;}
-  .cont-card .thumb{width:100%;height:70px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:12px;}
-  .cont-card h4{font-size:14px;font-weight:600;margin:0 0 8px;line-height:1.35;}
-
-  /* ---- shared course/path cards (library-style) ---- */
   .cards{display:flex;flex-direction:column;}
-  .card{display:grid;grid-template-columns:80px 1fr;gap:18px;padding:22px 4px;border-bottom:1px solid var(--line);}
+  .card{display:grid;grid-template-columns:88px 1fr;gap:20px;padding:26px 4px;border-bottom:1px solid var(--line);}
   .card:first-child{padding-top:4px;}
-  .thumb{width:80px;height:80px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;}
-  .card h3{font-size:18px;font-weight:500;margin:0 0 4px;}
-  .cat{color:var(--lav);font-size:12.5px;margin-bottom:7px;}
-  .desc{color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 14px;}
-  .meta-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
-  .meta{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;}
+  .thumb{width:88px;height:88px;border-radius:16px;display:flex;align-items:center;justify-content:center;flex:none;}
+  .thumb svg{width:34px;height:34px;}
+  .card h3{font-size:19px;font-weight:500;margin:0 0 4px;}
+  .cat{color:var(--lav);font-size:13px;margin-bottom:8px;}
+  .desc{color:var(--muted);font-size:14.5px;line-height:1.5;margin:0 0 16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .meta-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+  .meta{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13.5px;}
+  .meta svg{width:15px;height:15px;flex:none;}
   .spacer{flex:1;}
   .pct-good{color:var(--good);} .pct-mid{color:var(--warn);} .pct-none{color:var(--muted-2);}
-  .num-badge{width:22px;height:22px;border-radius:6px;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);flex:none;}
+  .btn-row{display:flex;gap:10px;}
 
-  /* ---- PATH DETAIL ---- */
+  /* ---- COMMONS ---- */
+  .commons-head h1{font-size:32px;font-weight:500;margin:0 0 8px;}
+  .commons-head p{color:var(--muted);font-size:15px;margin-bottom:34px;max-width:560px;line-height:1.6;}
+  .commons-block{margin-bottom:46px;}
+  .section-h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;}
+  .section-h h2{font-size:20px;font-weight:500;margin:0;}
+  .section-h span{color:var(--muted-2);font-size:13px;}
+
+  .path-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
+  .path-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px;cursor:pointer;transition:border-color .15s;}
+  .path-card:hover{border-color:var(--muted-2);}
+  .path-ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;}
+  .path-ic svg{width:20px;height:20px;}
+  .path-card h3{font-size:16px;font-weight:600;margin:0;line-height:1.3;}
+  .path-card p{color:var(--muted);font-size:13.5px;line-height:1.5;}
+  .path-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:8px;font-size:12.5px;color:var(--muted-2);}
+  .progress-bar{height:5px;border-radius:4px;background:var(--panel-2);overflow:hidden;margin-top:4px;}
+  .progress-bar i{display:block;height:100%;background:var(--good);}
+
+  .docs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;}
+  .doc-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;cursor:pointer;}
+  .doc-card:hover{border-color:var(--muted-2);}
+  .doc-card .tag{color:var(--muted-2);font-size:11.5px;margin-bottom:7px;}
+  .doc-card h4{font-size:14.5px;font-weight:600;margin:0 0 6px;}
+  .doc-card p{color:var(--muted);font-size:12.5px;line-height:1.5;}
+
+  /* ---- PATH DETAIL / DOC READER shared "reader page" chrome ---- */
   .back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;background:none;border:none;margin-bottom:22px;}
   .back:hover{color:var(--text);}
   .path-head{display:flex;gap:20px;align-items:flex-start;margin-bottom:30px;}
-  .path-head .path-ic{width:60px;height:60px;font-size:26px;border-radius:14px;flex:none;}
-  .path-head h1{font-size:30px;font-weight:500;margin:0 0 8px;}
+  .path-head .path-ic{width:58px;height:58px;border-radius:14px;flex:none;}
+  .path-head .path-ic svg{width:26px;height:26px;}
+  .path-head h1{font-size:29px;font-weight:500;margin:0 0 8px;}
   .path-head p{color:var(--muted);font-size:15px;max-width:600px;line-height:1.6;}
-  .path-meta{display:flex;gap:18px;color:var(--muted-2);font-size:13px;margin-top:12px;}
+  .path-meta{display:flex;gap:16px;color:var(--muted-2);font-size:13px;margin-top:12px;flex-wrap:wrap;}
+
+  .doc-reader{max-width:700px;}
+  .doc-reader h1{font-size:28px;font-weight:500;margin:0 0 22px;}
 
   /* ---- COURSE READER ---- */
   .reader-grid{display:grid;grid-template-columns:250px 1fr;gap:36px;align-items:start;}
@@ -139,19 +170,10 @@
 
   .badge-toast{position:fixed;right:24px;bottom:24px;background:var(--panel);border:1px solid var(--lav);border-radius:16px;padding:18px 20px;display:flex;gap:14px;align-items:center;max-width:340px;box-shadow:0 12px 40px rgba(0,0,0,.5);transform:translateY(140%);transition:transform .4s ease;z-index:60;}
   .badge-toast.show{transform:translateY(0);}
-  .badge-toast .ic{width:46px;height:46px;border-radius:12px;background:var(--lav);color:var(--lav-ic);display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;}
+  .badge-toast .ic{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;}
+  .badge-toast .ic svg{width:20px;height:20px;}
   .badge-toast strong{display:block;font-size:14px;margin-bottom:2px;}
   .badge-toast span{color:var(--muted);font-size:12.5px;}
-
-  /* ---- DOCS ---- */
-  .docs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
-  .doc-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;cursor:pointer;}
-  .doc-card:hover{border-color:var(--muted-2);}
-  .doc-card .tag{color:var(--muted-2);font-size:11.5px;margin-bottom:8px;}
-  .doc-card h4{font-size:15px;font-weight:600;margin:0 0 8px;}
-  .doc-card p{color:var(--muted);font-size:13px;line-height:1.5;}
-  .doc-reader{max-width:700px;}
-  .doc-reader h1{font-size:28px;font-weight:500;margin:0 0 22px;}
 
   /* ---- PROFILE ---- */
   .profile-banner{background:linear-gradient(120deg,#241f30,#1a1a1d 60%);border:1px solid var(--line);border-radius:18px;padding:28px 30px;margin-bottom:14px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
@@ -170,13 +192,10 @@
   .convert-banner p{font-size:14px;color:#d6d6da;}
   .convert-banner p b{color:var(--text);}
 
-  .section-h{display:flex;align-items:baseline;justify-content:space-between;margin:34px 0 15px;}
-  .section-h h3{font-size:17px;font-weight:600;margin:0;}
-  .section-h span{color:var(--muted-2);font-size:12.5px;}
-
   .path-progress-list{display:flex;flex-direction:column;gap:10px;}
-  .pp-row{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 16px;}
-  .pp-row .path-ic{width:34px;height:34px;font-size:15px;border-radius:9px;flex:none;}
+  .pp-row{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 16px;cursor:pointer;}
+  .pp-row .path-ic{width:34px;height:34px;border-radius:9px;flex:none;}
+  .pp-row .path-ic svg{width:16px;height:16px;}
   .pp-row .pp-name{font-size:13.5px;flex:1;}
   .pp-row .pp-frac{font-size:12px;color:var(--muted-2);}
   .pp-bar{width:110px;height:5px;border-radius:4px;background:var(--panel-2);overflow:hidden;}
@@ -184,7 +203,8 @@
 
   .badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
   .badge-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;}
-  .badge-card .bic{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:12px;}
+  .badge-card .bic{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+  .badge-card .bic svg{width:20px;height:20px;}
   .badge-card .blabel{font-size:10px;letter-spacing:.03em;color:var(--muted-2);margin-bottom:5px;}
   .badge-card h4{font-size:13.5px;font-weight:600;margin:0 0 7px;line-height:1.35;}
   .badge-card .issued{font-size:11.5px;color:var(--muted-2);margin-bottom:2px;}
@@ -205,24 +225,73 @@
   .dd-menu.show{display:block;}
   .dd-menu button{width:100%;text-align:left;background:none;border:none;color:var(--text);padding:10px 12px;border-radius:8px;font-size:14px;}
   .dd-menu button:hover{background:var(--panel-2);}
+
+  /* ---- SKILLS sidebar (screenshot categories) ---- */
+  .skill-cat{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;font-size:14.5px;color:var(--text);cursor:pointer;}
+  .skill-cat:hover{background:var(--panel-2);}
+  .skill-cat .chev{margin-left:auto;color:var(--muted-2);width:14px;height:14px;flex:none;transition:transform .15s;}
+  .skill-cat.open .chev{transform:rotate(90deg);}
+  .skill-cat .lbl{flex:1;color:var(--muted);}
+  .skill-cat.checked .lbl{color:var(--text);}
+  .skill-cat[data-empty="1"]{opacity:.55;}
+
+  /* ---- AUTH MODAL (real sign in / create account) ---- */
+  .auth-modal{width:360px;}
+  .auth-tabs{display:flex;gap:4px;background:var(--panel-2);border-radius:11px;padding:3px;margin-bottom:18px;}
+  .auth-tab{flex:1;text-align:center;padding:8px 0;border-radius:9px;font-size:13.5px;color:var(--muted);background:none;border:none;}
+  .auth-tab.active{background:var(--panel);color:var(--text);}
+  .auth-pane{display:none;}
+  .auth-pane.active{display:block;}
+  .field-lbl{font-size:12px;color:var(--muted-2);margin:0 0 5px;}
+  .auth-err{color:var(--bad);font-size:12.5px;min-height:16px;margin:-2px 0 10px;line-height:1.4;}
+  .auth-sub{color:var(--muted);font-size:12.5px;margin:0 0 4px;}
+  .auth-guest{width:100%;text-align:center;margin-top:8px;background:none;border:none;color:var(--muted);font-size:13px;padding:8px 0;}
+  .auth-guest:hover{color:var(--text);}
+  .modal.auth-modal input:disabled{opacity:.6;}
+
+  /* ---- KASHISH AI mini-widget ---- */
+  .kai-fab{position:fixed;right:22px;bottom:22px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#cdbdf3,#b9d6f2);border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(0,0,0,.45);z-index:70;color:#20203a;}
+  .kai-fab svg{width:24px;height:24px;}
+  .kai-fab:hover{filter:brightness(1.06);}
+  .kai-panel{position:fixed;right:22px;bottom:88px;width:320px;max-height:440px;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.55);display:none;flex-direction:column;overflow:hidden;z-index:70;}
+  .kai-panel.show{display:flex;}
+  .kai-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);}
+  .kai-head .dot2{width:9px;height:9px;border-radius:50%;background:var(--good);}
+  .kai-head strong{font-size:14px;font-weight:600;}
+  .kai-head span{color:var(--muted-2);font-size:11.5px;display:block;}
+  .kai-close{margin-left:auto;background:none;border:none;color:var(--muted);width:26px;height:26px;border-radius:8px;}
+  .kai-close:hover{background:var(--panel-2);color:var(--text);}
+  .kai-body{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+  .kai-msg{font-size:13.5px;line-height:1.55;max-width:88%;padding:9px 12px;border-radius:12px;}
+  .kai-msg.bot{background:var(--panel-2);color:#d6d6da;align-self:flex-start;border-bottom-left-radius:4px;}
+  .kai-msg.user{background:var(--lav);color:#1a1a1d;align-self:flex-end;border-bottom-right-radius:4px;}
+  .kai-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 12px;}
+  .kai-chip{background:var(--panel-2);border:1px solid var(--line);border-radius:20px;padding:6px 11px;font-size:12px;color:var(--muted);}
+  .kai-chip:hover{color:var(--text);border-color:var(--muted-2);}
+  .kai-inputrow{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);}
+  .kai-inputrow input{flex:1;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;color:var(--text);font-size:13.5px;}
+  .kai-send{background:var(--lav);border:none;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:#1a1a1d;flex:none;}
+  .kai-send svg{width:16px;height:16px;}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="brand" data-go="home"><span class="dot"></span> Nexor Skill</div>
+  <div class="brand" data-go="library"><span class="dot"></span> Nexor Skill</div>
   <nav class="nav">
-    <button data-view="home">Home</button>
-    <button data-view="paths">Learn</button>
-    <button data-view="docs">Docs</button>
-    <button data-view="profile">Developer Profile</button>
+    <button data-view="home" data-icon="home">Home</button>
+    <button data-view="library" class="active" data-icon="library">Library</button>
+    <button data-view="commons" data-icon="commons">Commons</button>
   </nav>
   <div class="top-right">
-    <div class="streak">⚡ <span id="streakCount">3</span></div>
+    <div class="streak" id="streakIconWrap"><span id="streakSvg"></span> <span id="streakCount">3</span></div>
+    <button class="icon-btn plus" id="plusBtn" title="Suggest a course"></button>
+    <button class="icon-btn" id="searchIconBtn" title="Search the library"></button>
+    <button class="icon-btn" id="bellBtn" title="Notifications"></button>
     <div class="dd">
       <button class="avatar" id="avatarBtn">G</button>
       <div class="dd-menu" id="ddMenu">
-        <button id="ddProfile">View profile</button>
+        <button id="ddProfile">View developer profile</button>
         <button id="ddSignout">Sign out</button>
       </div>
     </div>
@@ -232,36 +301,69 @@
 <main>
 
   <!-- ===================== HOME ===================== -->
-  <section class="view active" id="view-home">
-    <div class="hero">
+  <section class="view" id="view-home">
+    <div style="padding:44px 0 40px;border-bottom:1px solid var(--line);margin-bottom:40px;">
       <div class="eyebrow">Nexor Skill · powered by Kashish AI</div>
-      <h1>Learn to prompt. Understand how Kashish AI actually works. Build real, provable skills.</h1>
-      <p>Structured learning paths, long-form courses, and hands-on Q&A — no video required. Finish a path and earn a Nexor Cloud badge you can put on your Developer Profile.</p>
-      <button class="btn btn-primary" data-go="paths">Browse learning paths ⚡</button>
-      <div class="stat-strip">
-        <div><b>3</b><span>Learning paths</span></div>
-        <div><b>9</b><span>Full courses</span></div>
-        <div><b>27</b><span>Lessons</span></div>
-        <div><b id="homeBadgeCount">0</b><span>Badges you've earned</span></div>
-      </div>
+      <h1 style="font-size:42px;line-height:1.15;font-weight:500;margin:0 0 16px;max-width:620px;">Learn to prompt, understand how Kashish AI works, and build skills you can prove.</h1>
+      <p style="color:var(--muted);font-size:16px;max-width:520px;line-height:1.6;margin-bottom:24px;">Long-form courses, structured learning paths, and a developer profile that shows what you have actually finished — no video required.</p>
+      <button class="btn btn-primary" data-go="library">Browse the course library</button>
     </div>
-
-    <div class="home-section" id="continueSection" style="display:none;">
-      <div class="section-h"><h2>Continue learning</h2></div>
-      <div class="continue-row" id="continueRow"></div>
-    </div>
-
-    <div class="home-section">
-      <div class="section-h"><h2>Featured learning paths</h2><button data-go="paths">See all →</button></div>
+    <div class="commons-block">
+      <div class="section-h"><h2>Learning paths</h2><span>Finish every course in a path to earn its certification</span></div>
       <div class="path-grid" id="homePathGrid"></div>
     </div>
   </section>
 
-  <!-- ===================== PATHS LIST ===================== -->
-  <section class="view" id="view-paths">
-    <h1 style="font-size:32px;font-weight:500;margin:0 0 8px;">Learning paths</h1>
-    <p style="color:var(--muted);font-size:15px;margin-bottom:30px;">Each path is a curated set of courses. Finish every course in a path to earn its certification.</p>
-    <div class="path-grid" id="allPathGrid"></div>
+  <!-- ===================== LIBRARY (screenshot layout) ===================== -->
+  <section class="view active" id="view-library">
+    <div class="lib-head"><h1>Course library</h1></div>
+    <div class="searchbar">
+      <div class="sw" id="searchIconSlot"><input id="searchInput" placeholder="Search by course name or topic"></div>
+      <button class="sortbtn">By most popular ▾</button>
+    </div>
+    <div class="lib-grid">
+      <aside class="side">
+        <div class="side-item tab-active" id="tabAll"><span id="icAll"></span><span class="lbl">All courses</span></div>
+        <div class="side-item" id="tabMine"><span id="icMine"></span><span class="lbl">My courses</span></div>
+        <h4>SKILLS</h4>
+        <div class="side-item skill-filter checked" data-skill="all"><span class="chk on">✓</span><span class="lbl">Any skill</span></div>
+        <div class="skill-cat" data-empty="1" data-skill="Science"><span class="lbl">Science</span><span class="chev">›</span></div>
+        <div class="skill-cat checked" data-skill="Prompting,AI"><span class="lbl">Tech &amp; IT</span><span class="chev">›</span></div>
+        <div class="skill-cat" data-empty="1" data-skill="Humanities"><span class="lbl">Humanities</span><span class="chev">›</span></div>
+        <div class="skill-cat checked" data-skill="Business"><span class="lbl">Business &amp; Finance</span><span class="chev">›</span></div>
+        <div class="skill-cat" data-empty="1" data-skill="Art"><span class="lbl">Art &amp; Design</span><span class="chev">›</span></div>
+        <div class="skill-cat" data-empty="1" data-skill="Soft"><span class="lbl">Soft Skills</span><span class="chev">›</span></div>
+        <div class="skill-cat" data-empty="1" data-skill="Personal"><span class="lbl">Personal Development</span><span class="chev">›</span></div>
+        <div class="skill-cat" data-empty="1" data-skill="Languages"><span class="lbl">Languages</span><span class="chev">›</span></div>
+        <div class="skill-cat" data-empty="1" data-skill="Lifestyle"><span class="lbl">Lifestyle &amp; Hobbies</span><span class="chev">›</span></div>
+        <div class="skill-cat" data-empty="1" data-skill="Health"><span class="lbl">Health &amp; Wellness</span><span class="chev">›</span></div>
+        <div class="skill-cat" data-empty="1" data-skill="Engineering"><span class="lbl">Engineering</span><span class="chev">›</span></div>
+        <div class="skill-cat" data-empty="1" data-skill="Hobbies"><span class="lbl">Hobbies</span><span class="chev">›</span></div>
+        <hr>
+        <h4>DIFFICULTY</h4>
+        <div class="side-item difficulty-filter checked" data-level="Any"><span class="chk on">✓</span><span class="lbl">Any</span></div>
+        <div class="side-item difficulty-filter" data-level="Beginner"><span class="chk"></span><span class="lbl">Beginner</span></div>
+        <div class="side-item difficulty-filter" data-level="Intermediate"><span class="chk"></span><span class="lbl">Intermediate</span></div>
+      </aside>
+
+      <div class="cards" id="cardsWrap"></div>
+    </div>
+  </section>
+
+  <!-- ===================== COMMONS ===================== -->
+  <section class="view" id="view-commons">
+    <div class="commons-head">
+      <h1>Commons</h1>
+      <p>The shared space: browse learning paths toward a certification, and reference docs for working with Kashish AI outside a course.</p>
+    </div>
+    <div class="commons-block">
+      <div class="section-h"><h2>Learning paths</h2></div>
+      <div class="path-grid" id="commonsPathGrid"></div>
+    </div>
+    <div class="commons-block">
+      <div class="section-h"><h2>Docs &amp; guidelines</h2></div>
+      <div class="docs-grid" id="docsGrid"></div>
+    </div>
   </section>
 
   <!-- ===================== PATH DETAIL ===================== -->
@@ -280,10 +382,10 @@
 
   <!-- ===================== COURSE READER ===================== -->
   <section class="view" id="view-reader">
-    <button class="back" id="backBtn">← Back to path</button>
+    <button class="back" id="backBtn">← Back to library</button>
     <div class="reader-grid">
       <aside class="lesson-nav">
-        <div class="lnav-title" id="lnavTitle">COURSE CONTENTS</div>
+        <div class="lnav-title">COURSE CONTENTS</div>
         <div id="lnavList"></div>
       </aside>
       <div class="reader">
@@ -298,19 +400,13 @@
           <p>Answer the questions below to earn the completion badge for this course.</p>
           <div id="qList"></div>
           <div id="quizFeedback"></div>
-          <div class="submit-row"><button class="btn btn-primary" id="submitQuiz">Submit answers ⚡</button></div>
+          <div class="submit-row"><button class="btn btn-primary" id="submitQuiz">Submit answers</button></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===================== DOCS ===================== -->
-  <section class="view" id="view-docs">
-    <h1 style="font-size:32px;font-weight:500;margin:0 0 8px;">Docs & guidelines</h1>
-    <p style="color:var(--muted);font-size:15px;margin-bottom:30px;">Reference material for building good habits with Kashish AI — outside the structure of a course.</p>
-    <div class="docs-grid" id="docsGrid"></div>
-  </section>
-
+  <!-- ===================== DOC READER ===================== -->
   <section class="view" id="view-docReader">
     <button class="back" id="backFromDoc">← All docs</button>
     <div class="doc-reader">
@@ -323,8 +419,8 @@
   <!-- ===================== PROFILE ===================== -->
   <section class="view" id="view-profile">
     <div class="convert-banner" id="convertBanner">
-      <p>You're signed in as <b id="signedInName">Guest</b>. Turn your account into a <b>Developer Profile</b> to showcase your badges publicly.</p>
-      <button class="btn btn-primary" id="convertBtn">Convert to Developer Profile ⚡</button>
+      <p>You are signed in as <b id="signedInName">Guest</b>. Turn your account into a <b>Developer Profile</b> to showcase your badges publicly.</p>
+      <button class="btn btn-primary" id="convertBtn">Convert to Developer Profile</button>
     </div>
 
     <div class="profile-banner">
@@ -342,100 +438,236 @@
       </div>
     </div>
 
-    <div class="section-h"><h3>Learning path progress</h3></div>
+    <div class="section-h" style="margin-top:34px;"><h2>Learning path progress</h2></div>
     <div class="path-progress-list" id="pathProgressList"></div>
 
-    <div class="section-h"><h3>Certifications</h3><span id="certCountLbl">0 earned</span></div>
+    <div class="section-h" style="margin-top:34px;"><h2>Certifications</h2><span id="certCountLbl">0 earned</span></div>
     <div class="badge-grid" id="certGrid"></div>
 
-    <div class="section-h"><h3>Completion badges</h3><span id="badgeCountLbl">0 earned</span></div>
+    <div class="section-h" style="margin-top:34px;"><h2>Completion badges</h2><span id="badgeCountLbl">0 earned</span></div>
     <div class="badge-grid" id="badgeGrid"></div>
-    <div class="empty-badges" id="emptyBadges">No badges yet — start a course from a learning path to earn your first one.</div>
+    <div class="empty-badges" id="emptyBadges">No badges yet — start a course from the library to earn your first one.</div>
   </section>
 
 </main>
 
 <div class="badge-toast" id="badgeToast">
-  <div class="ic" id="toastIc">🏅</div>
+  <div class="ic" id="toastIc"></div>
   <div><strong id="toastTitle">Badge earned</strong><span id="toastSub">Nexor Cloud</span></div>
 </div>
 
 <div class="modal-bg" id="loginModal">
-  <div class="modal">
-    <h3>Sign in</h3>
-    <p>Sign in to track courses and earn badges on your Developer Profile.</p>
-    <input id="loginName" placeholder="Your name">
-    <div class="row">
-      <button class="btn" id="loginCancel">Cancel</button>
-      <button class="btn btn-primary" id="loginConfirm">Sign in</button>
+  <div class="modal auth-modal">
+    <h3>Your Nexor account</h3>
+    <p class="auth-sub">Same account as Kashish AI — sign in to track courses and earn badges on your Developer Profile.</p>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabSignIn">Sign in</button>
+      <button class="auth-tab" id="tabSignUp">Create account</button>
     </div>
+
+    <div class="auth-pane active" id="paneSignIn">
+      <div class="field-lbl">Email or @username</div>
+      <input id="l-email" placeholder="you@example.com">
+      <div class="field-lbl">Password</div>
+      <input id="l-pass" type="password" placeholder="••••••••">
+      <div class="auth-err" id="auth-err-login"></div>
+      <div class="row" style="justify-content:space-between;">
+        <button class="btn" id="loginCancel">Cancel</button>
+        <button class="btn btn-primary" id="btn-login-pass">Sign in</button>
+      </div>
+    </div>
+
+    <div class="auth-pane" id="paneSignUp">
+      <div class="field-lbl">Name</div>
+      <input id="r-name" placeholder="Your name">
+      <div class="field-lbl">Username</div>
+      <input id="r-handle" placeholder="@username">
+      <div class="field-lbl">Email</div>
+      <input id="r-email" placeholder="you@example.com">
+      <div class="field-lbl">Password</div>
+      <input id="r-pass" type="password" placeholder="At least 6 characters">
+      <div class="auth-err" id="auth-err-reg"></div>
+      <div class="row" style="justify-content:space-between;">
+        <button class="btn" id="signupCancel">Cancel</button>
+        <button class="btn btn-primary" id="btn-reg">Create account</button>
+      </div>
+    </div>
+
+    <button class="auth-guest" id="continueGuest">Just browsing — continue as guest</button>
+  </div>
+</div>
+
+<!-- ===================== KASHISH AI mini-widget ===================== -->
+<button class="kai-fab" id="kaiFab" title="Ask Kashish AI"></button>
+<div class="kai-panel" id="kaiPanel">
+  <div class="kai-head">
+    <span class="dot2"></span>
+    <div><strong>Kashish AI</strong><span>Quick help around Nexor Skill</span></div>
+    <button class="kai-close" id="kaiClose">✕</button>
+  </div>
+  <div class="kai-body" id="kaiBody"></div>
+  <div class="kai-chips" id="kaiChips"></div>
+  <div class="kai-inputrow">
+    <input id="kaiInput" placeholder="Ask about a course or path…">
+    <button class="kai-send" id="kaiSend"></button>
   </div>
 </div>
 
 <script>
 (function(){
+  /* ============================================================
+     AUTH — shared Firebase project. Signing into Nexor Skill signs
+     into the SAME account system used by Kashish AI / Nexor Sparks:
+     same email + password, same users/{uid} record.
+     ============================================================ */
+  var firebaseConfig = {
+    apiKey:"AIzaSyC30TcmMVhP_8HdFYS1WufRiZwSDYNMTF0",
+    authDomain:"pulse2-92372.firebaseapp.com",
+    databaseURL:"https://pulse2-92372-default-rtdb.firebaseio.com",
+    projectId:"pulse2-92372",
+    storageBucket:"pulse2-92372.firebasestorage.app",
+    messagingSenderId:"276235725177",
+    appId:"1:276235725177:web:0f4e0789fae80a435927a8",
+  };
+  // If the SDK failed to load (offline, blocked domain, file:// without a
+  // network) fall back to inert stubs so the rest of the site still works —
+  // only sign-in-dependent features stay unavailable, same pattern as Kashish.
+  var auth, db;
+  function makeOfflineStub(){
+    return new Proxy(function(){}, {
+      get(_t, prop){
+        if(prop==='onAuthStateChanged') return function(cb){ setTimeout(function(){ try{cb(null);}catch(e){} },0); return function(){}; };
+        if(prop==='once') return function(){ return Promise.resolve({exists:function(){return false;}, val:function(){return null;}}); };
+        if(['set','update','signOut','setPersistence','signInWithEmailAndPassword','createUserWithEmailAndPassword'].indexOf(prop)>-1)
+          return function(){ return Promise.reject(new Error('offline')); };
+        if(['then','catch','finally'].indexOf(prop)>-1) return undefined;
+        return function(){ return makeOfflineStub(); };
+      },
+      apply(){ return makeOfflineStub(); }
+    });
+  }
+  try{
+    if(typeof firebase==='undefined') throw new Error('Firebase SDK failed to load');
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth(); db = firebase.database();
+    try{
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){
+        try{ auth.setPersistence(firebase.auth.Auth.Persistence.NONE); }catch(e2){}
+      });
+    }catch(e){}
+  }catch(e){
+    console.error('Nexor Skill: Firebase unavailable, running guest-only.', e);
+    auth = makeOfflineStub(); db = makeOfflineStub();
+  }
+
+  // ---------------- icon library (line-art SVGs, no emoji) ----------------
+  function svg(inner, sw){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(sw||1.6)+'" stroke-linecap="round" stroke-linejoin="round">'+inner+'</svg>'; }
+  var ICONS = {
+    book:  svg('<path d="M4 5.5C4 4.7 4.7 4 5.5 4H12v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5C20 4.7 19.3 4 18.5 4H12v16h6.5a1.5 1.5 0 0 0 1.5-1.5z"/>'),
+    chatLang: svg('<path d="M4 5h16v11H8l-4 4z"/><path d="M8.5 9.5h7M8.5 12.5h4"/>'),
+    laptop: svg('<rect x="4" y="5" width="16" height="10" rx="1.2"/><path d="M2.5 19h19"/><path d="M9 15v2h6v-2"/>'),
+    pen: svg('<path d="M4 20l4-1 10-10-3-3L5 16z"/><path d="M14 6l3 3"/>'),
+    brain: svg('<path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-1 5.8A3 3 0 0 0 7 18a3 3 0 0 0 5-2V6a2 2 0 0 0-3-2z"/><path d="M15 4a3 3 0 0 1 3 3 3 3 0 0 1 1 5.8A3 3 0 0 1 17 18a3 3 0 0 1-5-2"/>'),
+    shield: svg('<path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/>'),
+    warn: svg('<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17h.01"/>'),
+    target: svg('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6" fill="currentColor"/>'),
+    growth: svg('<path d="M3 18l6-6 4 4 8-9"/><path d="M15 7h6v6"/>'),
+    dollar: svg('<path d="M12 2v20"/><path d="M17 6.5c0-1.9-2.2-3-5-3s-5 1.3-5 3 2.2 2.6 5 3 5 1.3 5 3-2.2 3-5 3-5-1.1-5-3"/>'),
+    puzzle: svg('<path d="M9 4h4v2.2a1.8 1.8 0 0 0 3 1.3A1.8 1.8 0 0 1 19 9v4h-2.2a1.8 1.8 0 1 0 0 3.6V19h-4v-2.2a1.8 1.8 0 1 0-3.6 0H7v-4h2.2a1.8 1.8 0 1 0 0-3.6H7V5a1 1 0 0 1 1-1h1z"/>'),
+    doc: svg('<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M9.5 12h5M9.5 15.5h5"/>'),
+    home: svg('<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/>'),
+    library: svg('<rect x="4" y="4" width="4" height="16" rx=".5"/><rect x="10" y="7" width="4" height="13" rx=".5"/><rect x="16" y="10" width="4" height="10" rx=".5"/>'),
+    commons: svg('<circle cx="7" cy="8" r="2.4"/><circle cx="17" cy="8" r="2.4"/><path d="M2.5 19c0-3 2-5 4.5-5s4.5 2 4.5 5"/><path d="M12.5 19c0-3 2-5 4.5-5s4.5 2 4.5 5"/>'),
+    plus: svg('<path d="M12 5v14M5 12h14"/>', 2),
+    search: svg('<circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-5-5"/>'),
+    bell: svg('<path d="M6 10a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/>'),
+    page: svg('<path d="M6 3h9l3 3v15H6z"/><path d="M15 3v3h3"/>'),
+    chart: svg('<path d="M4 20V10M12 20V4M20 20v-7"/>'),
+    thumb: svg('<path d="M7 11v9H4v-9z"/><path d="M7 11l3-8a2 2 0 0 1 2 2v5h5.5a2 2 0 0 1 2 2.4l-1.4 6A2 2 0 0 1 16.2 20H7"/>'),
+    badge: svg('<circle cx="12" cy="9" r="5.5"/><path d="M8.5 13.5L7 21l5-2.5L17 21l-1.5-7.5"/>'),
+    lightning: svg('<path d="M13 2 4 14h6l-1 8 9-12h-6z"/>', 1.4),
+    sparkle: svg('<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>'),
+    send: svg('<path d="M4 12l16-8-6 16-2.5-6.5z"/>')
+  };
+  function ic(key, size){ return '<span style="display:inline-flex;width:'+(size||16)+'px;height:'+(size||16)+'px;">'+ICONS[key]+'</span>'; }
+
   var THEMES = {
     lav:{bg:'var(--lav)',fg:'var(--lav-ic)'}, blue:{bg:'var(--blue)',fg:'var(--blue-ic)'},
     tan:{bg:'var(--tan)',fg:'var(--tan-ic)'}, mint:{bg:'var(--mint)',fg:'var(--mint-ic)'},
     rose:{bg:'var(--rose)',fg:'var(--rose-ic)'}
   };
+  function thumbHtml(theme, iconKey, size){
+    var th = THEMES[theme];
+    return '<div class="thumb" style="background:'+th.bg+';color:'+th.fg+';"><span style="width:'+(size||34)+'px;height:'+(size||34)+'px;">'+ICONS[iconKey]+'</span></div>';
+  }
+
+  // ---------------- static header icons ----------------
+  document.getElementById('streakSvg').innerHTML = ICONS.lightning;
+  document.getElementById('plusBtn').innerHTML = ic('plus',18);
+  document.getElementById('searchIconBtn').innerHTML = ic('search',18);
+  document.getElementById('bellBtn').innerHTML = ic('bell',18);
+  document.getElementById('icAll').innerHTML = ic('library',16);
+  document.getElementById('icMine').innerHTML = ic('badge',16);
+  document.getElementById('kaiFab').innerHTML = ic('sparkle',22);
+  document.getElementById('kaiSend').innerHTML = ic('send',16);
+  document.querySelector('.searchbar .sw svg') // placeholder, real icon injected below
+  document.getElementById('searchIconSlot').insertAdjacentHTML('afterbegin', ICONS.search.replace('<svg','<svg width="16" height="16"'));
 
   // ---------------- PATHS ----------------
   var PATHS = [
-    { id:'prompting', theme:'lav', icon:'🧠', title:'Prompting Foundations',
-      desc:'Learn to write prompts that get you useful answers on the first try — from basic structure to reusable templates.',
+    { id:'prompting', theme:'lav', icon:'pen', title:'Prompting Foundations',
+      desc:'Learn to write prompts that get useful answers on the first try, from basic structure to reusable templates.',
       courses:['intro-prompting','prompt-patterns','personalize-prompts'] },
-    { id:'understand-ai', theme:'blue', icon:'⚙️', title:'Understanding Kashish AI',
-      desc:'What Kashish AI can and can\\'t do, how it reasons, and how to work with it responsibly.',
+    { id:'understand-ai', theme:'blue', icon:'brain', title:'Understanding Kashish AI',
+      desc:'What Kashish AI can and cannot do, how it reasons, and how to work with it responsibly.',
       courses:['how-kashish-works','ai-limits','responsible-ai'] },
-    { id:'business-ai', theme:'tan', icon:'📈', title:'Business with AI',
-      desc:'Apply Kashish AI to real business problems — strategy, planning, and day-to-day operations.',
+    { id:'business-ai', theme:'tan', icon:'growth', title:'Business with AI',
+      desc:'Apply Kashish AI to real business problems: strategy, planning, and day-to-day operations.',
       courses:['llc-guide','cashflow','poke-holes'] }
   ];
 
   function L(title, blocks){ return {title:title, body:blocks}; }
 
-  // ---------------- COURSES (each with 3 lessons + quiz) ----------------
+  // ---------------- COURSES ----------------
   var COURSES = {
-
-    'intro-prompting': { theme:'lav', icon:'✍️', skill:'Prompting', level:'Beginner', pct:0, votes:0,
-      title:'Introduction to Prompting', cat:'Prompting Foundations · Course 1 of 3',
+    'intro-prompting': { theme:'lav', icon:'pen', skill:'Prompting', level:'Beginner', pct:0, votes:0,
+      title:'Introduction to Prompting', cat:'Prompting Foundations, Course 1 of 3',
       desc:'The anatomy of a prompt that works, and the three mistakes that make Kashish AI guess instead of help.',
       lessons:[
         L('What a prompt actually is', [
-          ['p','A prompt is not a search query — it\\'s an instruction. Kashish AI doesn\\'t "look up" an answer, it constructs one from what you tell it, so the quality of what you tell it directly shapes the quality of what comes back.'],
-          ['p','Think of a prompt as having three parts, even when you don\\'t write them explicitly: the task (what you want done), the context (what it needs to know to do it well), and the format (how you want the answer shaped).']
+          ['p','A prompt is not a search query, it is an instruction. Kashish AI does not "look up" an answer, it constructs one from what you tell it, so the quality of what you tell it directly shapes the quality of what comes back.'],
+          ['p','A prompt has three parts, even when you do not write them explicitly: the task (what you want done), the context (what it needs to know to do it well), and the format (how you want the answer shaped).']
         ]),
         L('The three mistakes beginners make', [
           ['h','Mistake 1: assuming shared context'],
-          ['p','"Fix my resume" assumes Kashish knows your industry, seniority, and what "fixed" means to you. It doesn\\'t — say it.'],
+          ['p','"Fix my resume" assumes Kashish knows your industry, seniority, and what "fixed" means to you. It does not, so say it.'],
           ['h','Mistake 2: no output format'],
-          ['p','If you don\\'t say how you want the answer shaped, you\\'ll get Kashish\\'s default guess, which is often longer than you needed.'],
+          ['p','If you do not say how you want the answer shaped, you get Kashish\'s default guess, which is often longer than you needed.'],
           ['h','Mistake 3: one shot, no follow-up'],
           ['p','The first answer is a draft, not a verdict. Treat prompting as a short conversation, not a single perfect request.']
         ]),
         L('A structure you can reuse', [
-          ['ul',['Task: one sentence, active verb.','Context: the 2-3 facts Kashish couldn\\'t guess.','Format: length, tone, or structure you want back.']],
+          ['ul',['Task: one sentence, active verb.','Context: the two or three facts Kashish could not guess.','Format: length, tone, or structure you want back.']],
           ['call','Try it: "Rewrite this paragraph for a technical audience. Keep it under 80 words. Cut the marketing language."'],
-          ['p','This structure is the base you\\'ll build on for every course after this one.']
+          ['p','This structure is the base you will build on for every course after this one.']
         ])
       ],
       quiz:[
         {q:'What are the three parts of a well-formed prompt?', opts:['Task, context, format','Subject, verb, object','Greeting, question, sign-off'], correct:0},
-        {q:'Why is "Fix my resume" a weak prompt on its own?', opts:['It\\'s too short to process','It assumes context Kashish doesn\\'t have','It uses the word "fix"'], correct:1}
+        {q:'Why is "Fix my resume" a weak prompt on its own?', opts:['It is too short to process','It assumes context Kashish does not have','It uses the word fix'], correct:1}
       ] },
 
-    'prompt-patterns': { theme:'lav', icon:'🧩', skill:'Prompting', level:'Beginner', pct:0, votes:0,
-      title:'Prompt Patterns That Work', cat:'Prompting Foundations · Course 2 of 3',
-      desc:'Five reusable patterns — comparison, critique, step-by-step, role, and constraint — that cover most real requests.',
+    'prompt-patterns': { theme:'lav', icon:'puzzle', skill:'Prompting', level:'Beginner', pct:0, votes:0,
+      title:'Prompt Patterns That Work', cat:'Prompting Foundations, Course 2 of 3',
+      desc:'Five reusable patterns, comparison, critique, step-by-step, role and constraint, that cover most real requests.',
       lessons:[
         L('Why patterns beat one-off prompts', [
-          ['p','Instead of inventing a new prompt every time, most useful requests fall into a small number of repeatable shapes. Learning the shapes is faster than learning the wording.']
+          ['p','Instead of inventing a new prompt every time, most useful requests fall into a small number of repeatable shapes. Learning the shapes is faster than learning the exact wording.']
         ]),
         L('Five patterns to know', [
           ['ul',[
             'Comparison: "Compare A and B on cost, speed, and risk."',
-            'Critique: "What\\'s the weakest part of this argument?"',
+            'Critique: "What is the weakest part of this argument?"',
             'Step-by-step: "Walk me through this as a numbered process."',
             'Role: "Answer as a skeptical editor reviewing this draft."',
             'Constraint: "Explain this in one paragraph, no jargon."'
@@ -443,7 +675,7 @@
           ['p','Most complex requests are just two or three of these patterns stacked together.']
         ]),
         L('Stacking patterns', [
-          ['call','Try it: "As a skeptical editor (role), tell me the weakest part of this pitch (critique), in three bullet points (constraint)."'],
+          ['call','Try it: "As a skeptical editor, tell me the weakest part of this pitch, in three bullet points."'],
           ['p','Stacking gets you a sharper, more specific answer than any single pattern alone.']
         ])
       ],
@@ -452,15 +684,15 @@
         {q:'What does "stacking" patterns mean?', opts:['Using several patterns in one prompt','Repeating the same prompt twice','Only using the role pattern'], correct:0}
       ] },
 
-    'personalize-prompts': { theme:'blue', icon:'🎯', skill:'Prompting', level:'Beginner', pct:0, votes:0,
-      title:'Personalization with Customized Prompts', cat:'Prompting Foundations · Course 3 of 3',
+    'personalize-prompts': { theme:'blue', icon:'target', skill:'Prompting', level:'Beginner', pct:0, votes:0,
+      title:'Personalization with Customized Prompts', cat:'Prompting Foundations, Course 3 of 3',
       desc:'Build a reusable prompt template that carries your tone, audience, and constraints, so you stop repeating yourself.',
       lessons:[
         L('The problem with one-off prompts', [
           ['p','If you retype your context every time, you get inconsistent answers and waste time. A saved, personalized template fixes both.']
         ]),
         L('Four things every template should specify', [
-          ['ul',['Who you\\'re writing to (audience)','What tone Kashish should use','What to leave out (constraints)','What "done" looks like (output format)']],
+          ['ul',['Who you are writing to (audience)','What tone Kashish should use','What to leave out (constraints)','What "done" looks like (output format)']],
           ['call','Template starter: "You are helping [role] write for [audience]. Keep the tone [tone]. Never [constraint]. Return the answer as [format]."']
         ]),
         L('Making it a habit', [
@@ -472,18 +704,18 @@
         {q:'Which of these is NOT one of the four template elements covered?', opts:['Audience','Tone','Your Wi-Fi speed','Output format'], correct:2}
       ] },
 
-    'how-kashish-works': { theme:'blue', icon:'🔍', skill:'AI', level:'Beginner', pct:0, votes:0,
-      title:'How Kashish AI Works', cat:'Understanding Kashish AI · Course 1 of 3',
-      desc:'A plain-language look at how Kashish AI turns your prompt into an answer — no computer science background needed.',
+    'how-kashish-works': { theme:'blue', icon:'brain', skill:'AI', level:'Beginner', pct:0, votes:0,
+      title:'How Kashish AI Works', cat:'Understanding Kashish AI, Course 1 of 3',
+      desc:'A plain-language look at how Kashish AI turns your prompt into an answer, no computer science background needed.',
       lessons:[
         L('Prediction, not lookup', [
-          ['p','Kashish AI generates an answer one piece at a time, each piece chosen based on everything written so far — your prompt included. It\\'s closer to a very well-read writer finishing a thought than a librarian pulling a book off a shelf.']
+          ['p','Kashish AI generates an answer one piece at a time, each piece chosen based on everything written so far, your prompt included. It is closer to a well-read writer finishing a thought than a librarian pulling a book off a shelf.']
         ]),
         L('Why context changes the answer', [
-          ['p','Because every word you add becomes part of what the next word is predicted from, small changes in your prompt can meaningfully shift the answer — which is exactly why the earlier courses in this path focus so much on prompt structure.']
+          ['p','Because every word you add becomes part of what the next word is predicted from, small changes in your prompt can meaningfully shift the answer, which is exactly why the earlier courses in this path focus so much on prompt structure.']
         ]),
         L('What "training" means here', [
-          ['p','Kashish AI learned patterns in language from a huge amount of text before you ever opened a conversation. It isn\\'t searching that text live — it\\'s using the patterns it learned, which is also why it can be confidently wrong about very specific facts.']
+          ['p','Kashish AI learned patterns in language from a huge amount of text before you ever opened a conversation. It is not searching that text live, it is using the patterns it learned, which is also why it can be confidently wrong about very specific facts.']
         ])
       ],
       quiz:[
@@ -491,57 +723,57 @@
         {q:'Why can Kashish AI be confidently wrong about a specific fact?', opts:['It is searching outdated websites','It generates from learned patterns, not a live lookup','It ignores your prompt'], correct:1}
       ] },
 
-    'ai-limits': { theme:'blue', icon:'⚠️', skill:'AI', level:'Beginner', pct:0, votes:0,
-      title:'What Kashish AI Can\\'t Do (Yet)', cat:'Understanding Kashish AI · Course 2 of 3',
-      desc:'Honest limits — recency, precision, and verification — so you know when to double-check.',
+    'ai-limits': { theme:'blue', icon:'warn', skill:'AI', level:'Beginner', pct:0, votes:0,
+      title:'What Kashish AI Cannot Do Yet', cat:'Understanding Kashish AI, Course 2 of 3',
+      desc:'Honest limits: recency, precision, and verification, so you know when to double-check.',
       lessons:[
         L('Recency', [
-          ['p','Kashish AI\\'s core knowledge has a cutoff. For anything that could have changed since then — prices, current events, who holds a role — treat its unaided answer as a starting guess, not a current fact.']
+          ['p','Kashish AI\'s core knowledge has a cutoff date. For anything that could have changed since then, prices, current events, who holds a role, treat its unaided answer as a starting guess, not a current fact.']
         ]),
         L('Precision on numbers', [
           ['p','Kashish AI is stronger at reasoning and structure than at exact arithmetic or citing precise figures from memory. For anything with financial or legal consequences, verify the number independently.']
         ]),
-        L('It won\\'t tell you when it\\'s guessing', [
-          ['p','A wrong answer and a right one can sound equally confident. The fix isn\\'t to distrust every answer — it\\'s to ask Kashish to show its reasoning, and to verify anything load-bearing before you act on it.']
+        L('It will not tell you when it is guessing', [
+          ['p','A wrong answer and a right one can sound equally confident. The fix is not to distrust every answer, it is to ask Kashish to show its reasoning, and to verify anything load-bearing before you act on it.']
         ])
       ],
       quiz:[
-        {q:'What should you do with time-sensitive questions (prices, current roles)?', opts:['Trust the first answer fully','Treat it as a starting guess and verify','Avoid asking Kashish entirely'], correct:1},
-        {q:'What is a practical fix for not knowing if Kashish is guessing?', opts:['Ask it to show its reasoning and verify load-bearing facts','Only ask yes/no questions','Repeat the same prompt three times'], correct:0}
+        {q:'What should you do with time-sensitive questions, like prices or current roles?', opts:['Trust the first answer fully','Treat it as a starting guess and verify','Avoid asking Kashish entirely'], correct:1},
+        {q:'What is a practical fix for not knowing if Kashish is guessing?', opts:['Ask it to show its reasoning and verify load-bearing facts','Only ask yes or no questions','Repeat the same prompt three times'], correct:0}
       ] },
 
-    'responsible-ai': { theme:'mint', icon:'🛡️', skill:'AI', level:'Beginner', pct:0, votes:0,
-      title:'Using Kashish AI Responsibly', cat:'Understanding Kashish AI · Course 3 of 3',
+    'responsible-ai': { theme:'mint', icon:'shield', skill:'AI', level:'Beginner', pct:0, votes:0,
+      title:'Using Kashish AI Responsibly', cat:'Understanding Kashish AI, Course 3 of 3',
       desc:'Practical habits for using AI at work without creating a mess someone else has to clean up.',
       lessons:[
         L('Disclose when it matters', [
           ['p','If AI-assisted work is going in front of a client, a grade, or a legal document, say so where your workplace or institution expects it. It protects you as much as anyone else.']
         ]),
         L('Keep a human in the loop for consequential decisions', [
-          ['p','Use Kashish to draft, summarize, and explore options — but a decision that affects someone\\'s money, health, or rights should have a person accountable for the final call.']
+          ['p','Use Kashish to draft, summarize, and explore options, but a decision that affects someone\'s money, health, or rights should have a person accountable for the final call.']
         ]),
         L('Protect sensitive information', [
-          ['p','Don\\'t paste confidential data, other people\\'s private information, or anything you wouldn\\'t want stored, into a prompt unless you know how that data is handled.']
+          ['p','Do not paste confidential data, or other people\'s private information, into a prompt unless you know how that data is handled.']
         ])
       ],
       quiz:[
-        {q:'What kind of decisions should always have a human accountable for the final call?', opts:['Consequential ones affecting money, health, or rights','Every single decision, no exceptions','None — Kashish can decide'], correct:0},
+        {q:'What kind of decisions should always have a human accountable for the final call?', opts:['Consequential ones affecting money, health, or rights','Every single decision, no exceptions','None, Kashish can decide'], correct:0},
         {q:'What is the guidance on pasting sensitive data into a prompt?', opts:['Always fine, nothing is stored','Avoid it unless you understand how the data is handled','Only allowed on weekends'], correct:1}
       ] },
 
-    'llc-guide': { theme:'tan', icon:'📖', skill:'Business', level:'Beginner', pct:0, votes:0,
-      title:'From Side Hustle to LLC', cat:'Business with AI · Course 1 of 3',
-      desc:'The five decisions to make, in order, before you file paperwork — and where Kashish AI helps you think each one through.',
+    'llc-guide': { theme:'tan', icon:'book', skill:'Business', level:'Beginner', pct:0, votes:0,
+      title:'From Side Hustle to LLC', cat:'Business with AI, Course 1 of 3',
+      desc:'The five decisions to make, in order, before you file paperwork, and where Kashish AI helps you think each one through.',
       lessons:[
         L('Before you file anything', [
-          ['p','Most side hustles don\\'t need an LLC on day one. They need clarity on five things first: what you\\'re selling, who pays for it, how money moves, what could go wrong, and what you\\'ll call it.']
+          ['p','Most side hustles do not need an LLC on day one. They need clarity on five things first: what you are selling, who pays for it, how money moves, what could go wrong, and what you will call it.']
         ]),
         L('The five decisions', [
-          ['ul',['Offer: one sentence, no buzzwords.','Customer: who pays, specifically.','Money flow: how and when you get paid.','Risk: what could get you sued or fined.','Name: check it\\'s available before you commit.']],
+          ['ul',['Offer: one sentence, no buzzwords.','Customer: who pays, specifically.','Money flow: how and when you get paid.','Risk: what could get you sued or fined.','Name: check it is available before you commit.']],
           ['call','Prompt to try: "I sell [offer] to [customer]. What licenses or registrations does someone in my situation typically need, and what should I check locally?"']
         ]),
         L('From decisions to paperwork', [
-          ['p','Once those five are answered plainly, the LLC filing itself is the easy, mostly administrative part — and you\\'ll fill it out faster because you already know the answers.']
+          ['p','Once those five are answered plainly, the LLC filing itself is the easy, mostly administrative part, and you will fill it out faster because you already know the answers.']
         ])
       ],
       quiz:[
@@ -549,93 +781,90 @@
         {q:'What is the "Risk" decision mainly about?', opts:['Stock market risk','What could get you sued or fined','Weather delays'], correct:1}
       ] },
 
-    'cashflow': { theme:'tan', icon:'💵', skill:'Business', level:'Beginner', pct:0, votes:0,
-      title:'Small Business Cash Flow Forecasting', cat:'Business with AI · Course 2 of 3',
-      desc:'A simple, honest way to see cash trouble coming before it arrives — with Kashish AI doing the tedious scenario math.',
+    'cashflow': { theme:'tan', icon:'dollar', skill:'Business', level:'Beginner', pct:0, votes:0,
+      title:'Small Business Cash Flow Forecasting', cat:'Business with AI, Course 2 of 3',
+      desc:'A simple, honest way to see cash trouble coming before it arrives, with Kashish AI doing the tedious scenario math.',
       lessons:[
         L('Profit and cash are not the same thing', [
           ['p','A profitable month can still leave you short on cash if a big customer pays late. Forecasting cash, not just profit, is what keeps a small business solvent.']
         ]),
         L('The three lines that matter', [
           ['ul',['Cash in: what actually lands in the account, and when.','Cash out: every payment leaving, including irregular ones.','Runway: how many weeks you could survive at zero new revenue.']],
-          ['call','Try it: "Here\\'s my income and expenses for the last 3 months [paste numbers]. Build a simple 8-week cash forecast and flag the week my balance is lowest."']
+          ['call','Try it: "Here is my income and expenses for the last 3 months [paste numbers]. Build a simple 8-week cash forecast and flag the week my balance is lowest."']
         ]),
         L('Using the forecast, not just making it', [
-          ['p','A forecast is only useful if you revisit it weekly and act on the low point before it arrives — chase a late invoice, delay a purchase, or arrange a short-term buffer.']
+          ['p','A forecast is only useful if you revisit it weekly and act on the low point before it arrives, chase a late invoice, delay a purchase, or arrange a short-term buffer.']
         ])
       ],
       quiz:[
-        {q:'Why can a profitable month still cause cash trouble?', opts:['Profit and cash timing can differ','Profit doesn\\'t count as money','Taxes are always late'], correct:0},
+        {q:'Why can a profitable month still cause cash trouble?', opts:['Profit and cash timing can differ','Profit does not count as money','Taxes are always late'], correct:0},
         {q:'What does "runway" mean in this context?', opts:['Your marketing budget','Weeks you could survive with no new revenue','Your loan interest rate'], correct:1}
       ] },
 
-    'poke-holes': { theme:'rose', icon:'🧷', skill:'Business', level:'Beginner', pct:0, votes:0,
-      title:'Poke Holes in Your Strategy', cat:'Business with AI · Course 3 of 3',
-      desc:'Use Kashish AI prompts to stress-test a plan before you commit to it — the questions a sharp cofounder would ask.',
+    'poke-holes': { theme:'rose', icon:'target', skill:'Business', level:'Beginner', pct:0, votes:0,
+      title:'Poke Holes in Your Strategy', cat:'Business with AI, Course 3 of 3',
+      desc:'Use Kashish AI prompts to stress-test a plan before you commit to it, the questions a sharp cofounder would ask.',
       lessons:[
-        L('Why a plan needs a devil\\'s advocate', [
-          ['p','A strategy that\\'s never been challenged usually has a hole in it somewhere. The fastest way to find it is to ask a pointed question before a customer or competitor asks it for you.']
+        L('Why a plan needs a devil\'s advocate', [
+          ['p','A strategy that has never been challenged usually has a hole in it somewhere. The fastest way to find it is to ask a pointed question before a customer or competitor asks it for you.']
         ]),
         L('A prompt pattern that works', [
           ['ul',['State the plan in two sentences, no jargon.','Ask Kashish to list the three assumptions the plan depends on.','Ask which assumption is weakest, and why.']],
-          ['call','Try it: "Here is my plan: [plan]. What are the three riskiest assumptions I\\'m making, ranked by how likely they are to be wrong?"']
+          ['call','Try it: "Here is my plan: [plan]. What are the three riskiest assumptions I am making, ranked by how likely they are to be wrong?"']
         ]),
         L('What to do with the weak assumption', [
-          ['p','Don\\'t argue with the answer — test the assumption cheaply instead, with a small experiment, a customer call, or a smaller pilot, before you scale the plan around it.']
+          ['p','Do not argue with the answer, test the assumption cheaply instead, with a small experiment, a customer call, or a smaller pilot, before you scale the plan around it.']
         ])
       ],
       quiz:[
-        {q:'What is the main value of asking an AI to poke holes in your strategy?', opts:['It gives a final yes/no verdict','It surfaces assumptions you might be avoiding','It writes the plan for you'], correct:1},
+        {q:'What is the main value of asking an AI to poke holes in your strategy?', opts:['It gives a final yes or no verdict','It surfaces assumptions you might be avoiding','It writes the plan for you'], correct:1},
         {q:'What should you do once you find the weakest assumption?', opts:['Ignore it and proceed','Test it cheaply before scaling','Abandon the plan immediately'], correct:1}
       ] }
   };
 
-  // ---------------- DOCS (Apple/Google-developer style reference) ----------------
+  // ---------------- DOCS ----------------
   var DOCS = [
-    { id:'style-guide', tag:'Guidelines', title:'Writing prompts: a style guide',
+    { id:'style-guide', tag:'Guidelines', title:'Writing prompts: a style guide', summary:'Short, specific, and structured beats long and vague, almost every time.',
       body:[['p','Short, specific, and structured beats long and vague, almost every time. Treat a prompt like a well-written ticket: one clear task, the context needed to do it, and a definition of done.'],
-        ['h','Do'],['ul',['Lead with the task in an active verb.','State constraints explicitly (length, tone, audience).','Ask for reasoning when the task is a judgment call.']],
+        ['h','Do'],['ul',['Lead with the task in an active verb.','State constraints explicitly, length, tone, audience.','Ask for reasoning when the task is a judgment call.']],
         ['h','Avoid'],['ul',['Burying the actual question in the third paragraph.','Assuming Kashish remembers something from a different conversation.','Asking ten unrelated questions in one prompt.']]] },
-    { id:'human-interface', tag:'Guidelines', title:'Human interface principles for AI features',
-      body:[['p','If you\\'re building something on top of Kashish AI, these hold up well in practice.'],
-        ['ul',['Always show the user what was AI-generated versus human-written.','Give an easy undo for anything AI suggested.','Never let an AI action be irreversible without confirmation.','Design for the AI being wrong sometimes — make correction cheap.']]] },
-    { id:'badges-explained', tag:'Reference', title:'How badges and certifications work',
-      body:[['p','A completion badge is awarded per course, once you answer every quiz question correctly. It\\'s issued by Nexor Cloud and appears on your Developer Profile immediately.'],
-        ['p','A certification is awarded once every course inside a learning path has been completed — it sits above individual badges and represents the whole path.']] },
-    { id:'glossary', tag:'Reference', title:'Glossary: prompting & AI terms',
+    { id:'human-interface', tag:'Guidelines', title:'Human interface principles for AI features', summary:'If you are building something on top of Kashish AI, these hold up well in practice.',
+      body:[['p','If you are building something on top of Kashish AI, these hold up well in practice.'],
+        ['ul',['Always show the user what was AI-generated versus human-written.','Give an easy undo for anything AI suggested.','Never let an AI action be irreversible without confirmation.','Design for the AI being wrong sometimes, make correction cheap.']]] },
+    { id:'badges-explained', tag:'Reference', title:'How badges and certifications work', summary:'A completion badge is awarded per course. A certification covers a whole path.',
+      body:[['p','A completion badge is awarded per course, once you answer every quiz question correctly. It is issued by Nexor Cloud and appears on your Developer Profile immediately.'],
+        ['p','A certification is awarded once every course inside a learning path has been completed, it sits above individual badges and represents the whole path.']] },
+    { id:'glossary', tag:'Reference', title:'Glossary: prompting and AI terms', summary:'Prompt, context, hallucination, template, and cutoff, defined plainly.',
       body:[['ul',[
-        'Prompt — the instruction or question you send to Kashish AI.',
-        'Context — background information included so Kashish doesn\\'t have to guess.',
-        'Hallucination — a confident but incorrect answer, usually on specific facts.',
-        'Template — a reusable prompt structure you fill in each time.',
-        'Cutoff — the point after which Kashish\\'s core knowledge may be out of date.'
+        'Prompt: the instruction or question you send to Kashish AI.',
+        'Context: background information included so Kashish does not have to guess.',
+        'Hallucination: a confident but incorrect answer, usually on specific facts.',
+        'Template: a reusable prompt structure you fill in each time.',
+        'Cutoff: the point after which Kashish\'s core knowledge may be out of date.'
       ]]] },
-    { id:'profile-guide', tag:'Guidelines', title:'Setting up your Developer Profile',
-      body:[['p','Your Developer Profile is a public page showing your earned badges and certifications — similar in spirit to a Google or Apple developer profile.'],
-        ['ul',['Convert from the Profile page once you\\'re signed in.','Badges appear automatically as you finish courses.','Certifications unlock once a full learning path is complete.']]] },
-    { id:'accessibility', tag:'Guidelines', title:'Accessibility in AI-assisted work',
+    { id:'profile-guide', tag:'Guidelines', title:'Setting up your Developer Profile', summary:'A public page showing your earned badges and certifications.',
+      body:[['p','Your Developer Profile is a public page showing your earned badges and certifications, similar in spirit to a Google or Apple developer profile.'],
+        ['ul',['Convert from the Profile page once you are signed in.','Badges appear automatically as you finish courses.','Certifications unlock once a full learning path is complete.']]] },
+    { id:'accessibility', tag:'Guidelines', title:'Accessibility in AI-assisted work', summary:'Check AI drafts the same way you would check any other content.',
       body:[['p','AI drafts should be checked the same way any content is: sufficient color contrast, real heading structure, alt text on images, and plain language as the default rather than the exception.']] }
   ];
 
   // ---------------- state ----------------
   var state = {
-    view:'home', activeCourse:null, activeLessonIdx:0, activePath:null, activeDoc:null,
-    quizAnswers:{},
-    signedIn:false, userName:'Guest', isDeveloper:false,
-    completedCourses:{},   // courseId -> true
-    earnedBadges:[],       // {courseId, date}
-    earnedCerts:[]         // {pathId, date}
+    view:'library', activeCourse:null, activeLessonIdx:0, activePath:null,
+    quizAnswers:{}, signedIn:false, userName:'Guest', isDeveloper:false, uid:null,
+    completedCourses:{}, earnedBadges:[], earnedCerts:[],
+    skillFilter:['Prompting','AI','Business'], levelFilter:'Any', query:''
   };
 
   function pctClass(p){ if(p>=60) return 'pct-good'; if(p>0) return 'pct-mid'; return 'pct-none'; }
-
+  function pctLabel(c){ return c.votes===0 ? 'Not rated (0)' : (c.pct+'% ('+c.votes+')'); }
   function pathProgress(pathId){
     var path = PATHS.find(function(p){return p.id===pathId;});
     var done = path.courses.filter(function(cid){return state.completedCourses[cid];}).length;
     return {done:done, total:path.courses.length};
   }
 
-  // ---------------- generic block renderer ----------------
   function renderBlocks(container, blocks){
     container.innerHTML='';
     blocks.forEach(function(b){
@@ -646,97 +875,171 @@
     });
   }
 
-  // ---------------- HOME ----------------
-  function renderHome(){
-    document.getElementById('homeBadgeCount').textContent = state.earnedBadges.length;
-    var grid = document.getElementById('homePathGrid');
-    grid.innerHTML='';
-    PATHS.forEach(function(p){ grid.appendChild(pathCard(p)); });
-
-    var inProgress = Object.keys(COURSES).filter(function(cid){
-      return !state.completedCourses[cid] && cid===state._lastOpened;
+  // ---------------- LIBRARY (flat, matches screenshot) ----------------
+  function renderCards(){
+    var wrap = document.getElementById('cardsWrap');
+    wrap.innerHTML='';
+    var q = state.query.trim().toLowerCase();
+    var ids = Object.keys(COURSES).filter(function(id){
+      var c = COURSES[id];
+      var skillOk = state.skillFilter.indexOf(c.skill)>-1;
+      var levelOk = state.levelFilter==='Any' || c.level===state.levelFilter;
+      var queryOk = !q || c.title.toLowerCase().indexOf(q)>-1 || c.cat.toLowerCase().indexOf(q)>-1;
+      return skillOk && levelOk && queryOk;
     });
-    var row = document.getElementById('continueRow');
-    var section = document.getElementById('continueSection');
-    if(state._lastOpened && !state.completedCourses[state._lastOpened]){
-      section.style.display='block';
-      row.innerHTML='';
-      var c = COURSES[state._lastOpened];
-      var th = THEMES[c.theme];
+    if(ids.length===0){ wrap.innerHTML = '<p style="color:var(--muted);padding:30px 4px;">No courses match that search yet.</p>'; return; }
+    ids.forEach(function(id){
+      var c = COURSES[id];
+      var earned = !!state.completedCourses[id];
       var card = document.createElement('div');
-      card.className='cont-card';
-      card.innerHTML = '<div class="thumb" style="background:'+th.bg+';color:'+th.fg+';">'+c.icon+'</div><h4>'+c.title+'</h4><button class="btn btn-primary" data-open="'+state._lastOpened+'">Continue ⚡</button>';
-      row.appendChild(card);
-      row.querySelector('[data-open]').addEventListener('click', function(){ openCourse(state._lastOpened); });
-    } else { section.style.display='none'; }
+      card.className='card';
+      card.innerHTML =
+        thumbHtml(c.theme, c.icon) +
+        '<div>'+
+          '<h3>'+c.title+'</h3>'+
+          '<div class="cat">'+c.cat+'</div>'+
+          '<p class="desc">'+c.desc+'</p>'+
+          '<div class="meta-row">'+
+            '<span class="meta">'+ic('page',15)+' '+c.lessons.length+'</span>'+
+            '<span class="meta">'+ic('chart',15)+' '+c.level+'</span>'+
+            '<span class="meta '+pctClass(c.pct)+'">'+ic('thumb',15)+' '+pctLabel(c)+'</span>'+
+            '<span class="spacer"></span>'+
+            '<div class="btn-row">'+
+              (earned ? '<span class="btn" style="border-color:var(--good);color:var(--good);">Badge earned</span>' : '')+
+              '<button class="btn btn-primary" data-open="'+id+'">'+(earned?'Review':'Start course')+'</button>'+
+            '</div>'+
+          '</div>'+
+        '</div>';
+      wrap.appendChild(card);
+    });
+    wrap.querySelectorAll('[data-open]').forEach(function(btn){
+      btn.addEventListener('click', function(){ openCourse(btn.getAttribute('data-open')); });
+    });
   }
 
+  var ALL_SKILLS = ['Prompting','AI','Business'];
+  var anySkillItem = document.querySelector('.skill-filter[data-skill="all"]');
+  function syncAnySkillChk(){
+    var chk = anySkillItem.querySelector('.chk');
+    var allOn = state.skillFilter.length===ALL_SKILLS.length;
+    anySkillItem.classList.toggle('checked', allOn);
+    chk.classList.toggle('on', allOn);
+    chk.textContent = allOn ? '✓' : '';
+  }
+  anySkillItem.addEventListener('click', function(){
+    state.skillFilter = ALL_SKILLS.slice();
+    document.querySelectorAll('.skill-cat').forEach(function(x){ x.classList.add('checked'); });
+    syncAnySkillChk();
+    renderCards();
+  });
+  document.querySelectorAll('.skill-cat').forEach(function(el){
+    el.addEventListener('click', function(){
+      var skills = el.getAttribute('data-skill').split(',');
+      var isOn = el.classList.contains('checked');
+      if(isOn){
+        state.skillFilter = state.skillFilter.filter(function(s){ return skills.indexOf(s)===-1; });
+        el.classList.remove('checked');
+      } else {
+        skills.forEach(function(s){ if(state.skillFilter.indexOf(s)===-1) state.skillFilter.push(s); });
+        el.classList.add('checked');
+      }
+      syncAnySkillChk();
+      renderCards();
+    });
+  });
+  document.querySelectorAll('.difficulty-filter').forEach(function(el){
+    el.addEventListener('click', function(){
+      document.querySelectorAll('.difficulty-filter').forEach(function(x){ x.classList.remove('checked'); x.querySelector('.chk').classList.remove('on'); x.querySelector('.chk').textContent=''; });
+      el.classList.add('checked');
+      el.querySelector('.chk').classList.add('on');
+      el.querySelector('.chk').textContent='✓';
+      state.levelFilter = el.getAttribute('data-level');
+      renderCards();
+    });
+  });
+  document.getElementById('searchInput').addEventListener('input', function(e){ state.query = e.target.value; renderCards(); });
+
+  // ---------------- HOME / COMMONS path grids ----------------
   function pathCard(p){
     var th = THEMES[p.theme];
     var prog = pathProgress(p.id);
     var div = document.createElement('div');
     div.className='path-card';
     div.innerHTML =
-      '<div class="path-ic" style="background:'+th.bg+';color:'+th.fg+';">'+p.icon+'</div>'+
+      '<div class="path-ic" style="background:'+th.bg+';color:'+th.fg+';">'+ic(p.icon,20)+'</div>'+
       '<h3>'+p.title+'</h3><p>'+p.desc+'</p>'+
       '<div class="path-foot"><span>'+p.courses.length+' courses</span><span>'+prog.done+'/'+prog.total+' done</span></div>'+
       '<div class="progress-bar"><i style="width:'+(prog.total?Math.round(prog.done/prog.total*100):0)+'%"></i></div>';
     div.addEventListener('click', function(){ openPath(p.id); });
     return div;
   }
-
-  // ---------------- PATHS LIST ----------------
-  function renderPathsList(){
-    var grid = document.getElementById('allPathGrid');
-    grid.innerHTML='';
-    PATHS.forEach(function(p){ grid.appendChild(pathCard(p)); });
+  function renderPathGrids(){
+    ['homePathGrid','commonsPathGrid'].forEach(function(gid){
+      var grid = document.getElementById(gid);
+      if(!grid) return;
+      grid.innerHTML='';
+      PATHS.forEach(function(p){ grid.appendChild(pathCard(p)); });
+    });
   }
+
+  function renderDocsGrid(){
+    var grid = document.getElementById('docsGrid');
+    grid.innerHTML='';
+    DOCS.forEach(function(d){
+      var card = document.createElement('div');
+      card.className='doc-card';
+      card.innerHTML = '<div class="tag">'+d.tag+'</div><h4>'+d.title+'</h4><p>'+d.summary+'</p>';
+      card.addEventListener('click', function(){ openDoc(d.id); });
+      grid.appendChild(card);
+    });
+  }
+  function openDoc(id){
+    var d = DOCS.find(function(x){return x.id===id;});
+    document.getElementById('dTag').textContent = d.tag;
+    document.getElementById('dTitle').textContent = d.title;
+    renderBlocks(document.getElementById('dBody'), d.body);
+    setView('docReader');
+    window.scrollTo(0,0);
+  }
+  document.getElementById('backFromDoc').addEventListener('click', function(){ setView('commons'); });
 
   // ---------------- PATH DETAIL ----------------
   function openPath(pathId){
     var p = PATHS.find(function(x){return x.id===pathId;});
     state.activePath = pathId;
     var th = THEMES[p.theme];
-    var ic = document.getElementById('pdIcon');
-    ic.style.background = th.bg; ic.style.color = th.fg; ic.textContent = p.icon;
+    var ico = document.getElementById('pdIcon');
+    ico.style.background = th.bg; ico.style.color = th.fg; ico.innerHTML = ic(p.icon,26);
     document.getElementById('pdTitle').textContent = p.title;
     document.getElementById('pdDesc').textContent = p.desc;
     var prog = pathProgress(pathId);
-    document.getElementById('pdMeta').innerHTML = '📚 '+p.courses.length+' courses &nbsp;·&nbsp; '+prog.done+'/'+prog.total+' complete &nbsp;·&nbsp; Managed by Nexor Cloud';
+    document.getElementById('pdMeta').innerHTML = p.courses.length+' courses &nbsp;·&nbsp; '+prog.done+'/'+prog.total+' complete &nbsp;·&nbsp; Managed by Nexor Cloud';
 
     var list = document.getElementById('pdCourseList');
     list.innerHTML='';
     p.courses.forEach(function(cid, i){
       var c = COURSES[cid];
-      var cth = THEMES[c.theme];
       var done = !!state.completedCourses[cid];
       var card = document.createElement('div');
       card.className='card';
       card.innerHTML =
-        '<div class="thumb" style="background:'+cth.bg+';color:'+cth.fg+';">'+c.icon+'</div>'+
+        thumbHtml(c.theme, c.icon) +
         '<div><h3>'+(i+1)+'. '+c.title+'</h3><div class="cat">'+c.cat+'</div><p class="desc">'+c.desc+'</p>'+
-        '<div class="meta-row"><span class="meta">📄 '+c.lessons.length+' lessons</span><span class="meta">📶 '+c.level+'</span>'+
-        (done?'<span class="meta" style="color:var(--good);">✓ Completed</span>':'')+
-        '<span class="spacer"></span><button class="btn btn-primary" data-open="'+cid+'">'+(done?'Review':'Start course')+' ⚡</button></div></div>';
+        '<div class="meta-row"><span class="meta">'+ic('page',15)+' '+c.lessons.length+' lessons</span><span class="meta">'+ic('chart',15)+' '+c.level+'</span>'+
+        (done?'<span class="meta" style="color:var(--good);">Completed</span>':'')+
+        '<span class="spacer"></span><button class="btn btn-primary" data-open="'+cid+'">'+(done?'Review':'Start course')+'</button></div></div>';
       list.appendChild(card);
     });
-    list.querySelectorAll('[data-open]').forEach(function(btn){
-      btn.addEventListener('click', function(){ openCourse(btn.getAttribute('data-open')); });
-    });
+    list.querySelectorAll('[data-open]').forEach(function(btn){ btn.addEventListener('click', function(){ openCourse(btn.getAttribute('data-open')); }); });
     setView('pathDetail');
   }
-  document.getElementById('backFromPath').addEventListener('click', function(){ setView('paths'); });
+  document.getElementById('backFromPath').addEventListener('click', function(){ setView('commons'); });
 
   // ---------------- COURSE READER ----------------
   function openCourse(id){
     if(!state.signedIn){ openLogin(); return; }
-    state.activeCourse = id;
-    state.activeLessonIdx = 0;
-    state.quizAnswers = {};
-    state._lastOpened = id;
-    renderReader();
-    setView('reader');
-    window.scrollTo(0,0);
+    state.activeCourse = id; state.activeLessonIdx = 0; state.quizAnswers = {};
+    renderReader(); setView('reader'); window.scrollTo(0,0);
   }
 
   function renderReader(){
@@ -758,7 +1061,7 @@
     });
     var quizItem = document.createElement('div');
     quizItem.className='lnav-item'+(atQuiz?' current':'')+(state.completedCourses[state.activeCourse]?' done':'');
-    quizItem.innerHTML = '<span class="lnav-dot">'+(state.completedCourses[state.activeCourse]?'✓':'Q')+'</span><span>Quiz & badge</span>';
+    quizItem.innerHTML = '<span class="lnav-dot">'+(state.completedCourses[state.activeCourse]?'✓':'Q')+'</span><span>Quiz and badge</span>';
     quizItem.addEventListener('click', function(){ state.activeLessonIdx=c.lessons.length; renderReader(); });
     lnav.appendChild(quizItem);
 
@@ -774,12 +1077,12 @@
       renderBlocks(body, les.body);
       foot.innerHTML='';
       if(state.activeLessonIdx>0){
-        var prev=document.createElement('button'); prev.className='btn'; prev.textContent='← Previous lesson';
+        var prev=document.createElement('button'); prev.className='btn'; prev.textContent='Previous lesson';
         prev.addEventListener('click', function(){ state.activeLessonIdx--; renderReader(); window.scrollTo(0,0); });
         foot.appendChild(prev);
       } else { foot.appendChild(document.createElement('span')); }
       var next=document.createElement('button'); next.className='btn btn-primary';
-      next.textContent = (state.activeLessonIdx===c.lessons.length-1) ? 'Go to quiz ⚡' : 'Next lesson →';
+      next.textContent = (state.activeLessonIdx===c.lessons.length-1) ? 'Go to quiz' : 'Next lesson';
       next.addEventListener('click', function(){ state.activeLessonIdx++; renderReader(); window.scrollTo(0,0); });
       foot.appendChild(next);
     } else {
@@ -804,10 +1107,7 @@
       qList.appendChild(qDiv);
     });
     qList.querySelectorAll('input[type=radio]').forEach(function(inp){
-      inp.addEventListener('change', function(){
-        var qi = inp.closest('.opt').getAttribute('data-qi');
-        state.quizAnswers[qi] = parseInt(inp.value,10);
-      });
+      inp.addEventListener('change', function(){ var qi = inp.closest('.opt').getAttribute('data-qi'); state.quizAnswers[qi] = parseInt(inp.value,10); });
     });
     document.getElementById('quizFeedback').innerHTML='';
   }
@@ -818,10 +1118,8 @@
     c.quiz.forEach(function(item, qi){
       var chosen = state.quizAnswers[qi];
       document.querySelectorAll('.opt[data-qi="'+qi+'"]').forEach(function(el){el.classList.remove('correct','wrong');});
-      if(chosen===item.correct){
-        correct++;
-        var el=document.querySelector('.opt[data-qi="'+qi+'"][data-oi="'+item.correct+'"]'); if(el) el.classList.add('correct');
-      } else if(chosen!==undefined){
+      if(chosen===item.correct){ correct++; var el=document.querySelector('.opt[data-qi="'+qi+'"][data-oi="'+item.correct+'"]'); if(el) el.classList.add('correct'); }
+      else if(chosen!==undefined){
         var w=document.querySelector('.opt[data-qi="'+qi+'"][data-oi="'+chosen+'"]'); if(w) w.classList.add('wrong');
         var r=document.querySelector('.opt[data-qi="'+qi+'"][data-oi="'+item.correct+'"]'); if(r) r.classList.add('correct');
       }
@@ -840,29 +1138,29 @@
     if(!state.completedCourses[cid]){
       state.completedCourses[cid]=true;
       state.earnedBadges.push({courseId:cid, date:new Date()});
-      showBadgeToast(c, 'Nexor Cloud · Completion badge', c.title);
+      showToast(c.theme, c.icon, c.title, 'Nexor Cloud · Completion badge');
       checkCertification();
+      renderCards();
+      scheduleSaveProgress();
     }
     renderReader();
   }
 
   function checkCertification(){
-    var p = PATHS.find(function(x){return x.id===state.activePath;}) ||
-            PATHS.find(function(x){return x.courses.indexOf(state.activeCourse)>-1;});
+    var p = PATHS.find(function(x){return x.courses.indexOf(state.activeCourse)>-1;});
     if(!p) return;
     var prog = pathProgress(p.id);
     var already = state.earnedCerts.some(function(x){return x.pathId===p.id;});
     if(prog.done===prog.total && !already){
       state.earnedCerts.push({pathId:p.id, date:new Date()});
-      setTimeout(function(){ showBadgeToast(p, 'Nexor Cloud · Certification', p.title+' — Certified'); }, 4400);
+      setTimeout(function(){ showToast(p.theme, p.icon, p.title+' — Certified', 'Nexor Cloud · Certification'); }, 4400);
     }
   }
 
-  function showBadgeToast(item, sub, title){
-    var th = THEMES[item.theme];
-    document.getElementById('toastIc').style.background = th.bg;
-    document.getElementById('toastIc').style.color = th.fg;
-    document.getElementById('toastIc').textContent = item.icon;
+  function showToast(theme, iconKey, title, sub){
+    var th = THEMES[theme];
+    var box = document.getElementById('toastIc');
+    box.style.background = th.bg; box.style.color = th.fg; box.innerHTML = ic(iconKey,20);
     document.getElementById('toastTitle').textContent = title;
     document.getElementById('toastSub').textContent = sub;
     var t = document.getElementById('badgeToast');
@@ -872,30 +1170,8 @@
   }
 
   document.getElementById('backBtn').addEventListener('click', function(){
-    if(state.activePath){ openPath(state.activePath); } else { setView('paths'); }
+    if(state.activePath){ openPath(state.activePath); } else { setView('library'); }
   });
-
-  // ---------------- DOCS ----------------
-  function renderDocsGrid(){
-    var grid = document.getElementById('docsGrid');
-    grid.innerHTML='';
-    DOCS.forEach(function(d){
-      var card = document.createElement('div');
-      card.className='doc-card';
-      card.innerHTML = '<div class="tag">'+d.tag+'</div><h4>'+d.title+'</h4><p>'+(d.body[0][1] || (d.body[0][1] && d.body[0][1][0]) || '').toString().slice(0,110)+'…</p>';
-      card.addEventListener('click', function(){ openDoc(d.id); });
-      grid.appendChild(card);
-    });
-  }
-  function openDoc(id){
-    var d = DOCS.find(function(x){return x.id===id;});
-    document.getElementById('dTag').textContent = d.tag;
-    document.getElementById('dTitle').textContent = d.title;
-    renderBlocks(document.getElementById('dBody'), d.body);
-    setView('docReader');
-    window.scrollTo(0,0);
-  }
-  document.getElementById('backFromDoc').addEventListener('click', function(){ setView('docs'); });
 
   // ---------------- PROFILE ----------------
   function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' EDT'; }
@@ -909,14 +1185,13 @@
     document.getElementById('signedInName').textContent = state.userName;
 
     document.getElementById('pTags').innerHTML = state.isDeveloper
-      ? '<span class="p-tag">✓ Developer Profile</span><span class="p-tag">Nexor Skill member</span>'
+      ? '<span class="p-tag">Developer Profile</span><span class="p-tag">Nexor Skill member</span>'
       : '<span class="p-tag">Learner profile</span>';
 
     document.getElementById('statBadges').textContent = state.earnedBadges.length;
     document.getElementById('statCerts').textContent = state.earnedCerts.length;
     document.getElementById('statPoints').textContent = state.earnedBadges.length*150 + state.earnedCerts.length*500;
     document.getElementById('statStreak').textContent = document.getElementById('streakCount').textContent;
-
     document.getElementById('convertBanner').classList.toggle('show', state.signedIn && !state.isDeveloper);
 
     var ppList = document.getElementById('pathProgressList');
@@ -924,11 +1199,10 @@
     PATHS.forEach(function(p){
       var th=THEMES[p.theme]; var prog=pathProgress(p.id);
       var row=document.createElement('div'); row.className='pp-row';
-      row.innerHTML = '<div class="path-ic" style="background:'+th.bg+';color:'+th.fg+';">'+p.icon+'</div>'+
+      row.innerHTML = '<div class="path-ic" style="background:'+th.bg+';color:'+th.fg+';">'+ic(p.icon,16)+'</div>'+
         '<div class="pp-name">'+p.title+'</div>'+
         '<div class="pp-bar"><i style="width:'+(prog.total?Math.round(prog.done/prog.total*100):0)+'%"></i></div>'+
         '<div class="pp-frac">'+prog.done+'/'+prog.total+'</div>';
-      row.style.cursor='pointer';
       row.addEventListener('click', function(){ openPath(p.id); });
       ppList.appendChild(row);
     });
@@ -943,7 +1217,7 @@
         var p = PATHS.find(function(x){return x.id===cert.pathId;});
         var th = THEMES[p.theme];
         var card=document.createElement('div'); card.className='badge-card cert-card';
-        card.innerHTML='<div class="bic" style="background:'+th.bg+';color:'+th.fg+';">'+p.icon+'</div>'+
+        card.innerHTML='<div class="bic" style="background:'+th.bg+';color:'+th.fg+';">'+ic(p.icon,20)+'</div>'+
           '<div class="blabel">CERTIFICATION</div><h4>'+p.title+'</h4>'+
           '<div class="issued">Earned '+fmtDate(cert.date)+'</div><div class="issuer">Nexor Cloud</div>';
         certGrid.appendChild(card);
@@ -960,15 +1234,14 @@
       state.earnedBadges.slice().reverse().forEach(function(b){
         var c = COURSES[b.courseId]; var th = THEMES[c.theme];
         var card=document.createElement('div'); card.className='badge-card';
-        card.innerHTML='<div class="bic" style="background:'+th.bg+';color:'+th.fg+';">'+c.icon+'</div>'+
+        card.innerHTML='<div class="bic" style="background:'+th.bg+';color:'+th.fg+';">'+ic(c.icon,20)+'</div>'+
           '<div class="blabel">COMPLETION BADGE</div><h4>'+c.title+'</h4>'+
           '<div class="issued">Earned '+fmtDate(b.date)+'</div><div class="issuer">Nexor Cloud</div>';
         grid.appendChild(card);
       });
     }
   }
-
-  document.getElementById('convertBtn').addEventListener('click', function(){ state.isDeveloper=true; renderProfile(); });
+  document.getElementById('convertBtn').addEventListener('click', function(){ state.isDeveloper=true; renderProfile(); scheduleSaveProgress(); });
 
   // ---------------- nav / view switching ----------------
   function setView(v){
@@ -976,24 +1249,21 @@
     document.querySelectorAll('.view').forEach(function(el){el.classList.remove('active');});
     document.getElementById('view-'+v).classList.add('active');
     document.querySelectorAll('.nav button').forEach(function(b){b.classList.remove('active');});
-    var map = {home:'home', paths:'paths', pathDetail:'paths', reader:'paths', docs:'docs', docReader:'docs', profile:'profile'};
-    var navBtn = document.querySelector('.nav button[data-view="'+map[v]+'"]');
-    if(navBtn) navBtn.classList.add('active');
-    if(v==='home') renderHome();
-    if(v==='paths') renderPathsList();
-    if(v==='docs') renderDocsGrid();
+    var map = {home:'home', library:'library', pathDetail:'library', reader:'library', commons:'commons', docReader:'commons', profile:null};
+    var navKey = map[v];
+    if(navKey){ var navBtn = document.querySelector('.nav button[data-view="'+navKey+'"]'); if(navBtn) navBtn.classList.add('active'); }
+    if(v==='home') renderPathGrids();
+    if(v==='library') renderCards();
+    if(v==='commons'){ renderPathGrids(); renderDocsGrid(); }
     if(v==='profile') renderProfile();
   }
   document.querySelectorAll('.nav button[data-view]').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var v = btn.getAttribute('data-view');
-      if(v==='profile' && !state.signedIn){ openLogin(); return; }
-      setView(v);
-    });
+    btn.addEventListener('click', function(){ setView(btn.getAttribute('data-view')); });
   });
-  document.querySelectorAll('[data-go]').forEach(function(el){
-    el.addEventListener('click', function(){ setView(el.getAttribute('data-go')); });
-  });
+  document.querySelectorAll('[data-go]').forEach(function(el){ el.addEventListener('click', function(){ setView(el.getAttribute('data-go')); }); });
+  document.getElementById('plusBtn').addEventListener('click', function(){ setView('library'); document.getElementById('searchInput').focus(); });
+  document.getElementById('searchIconBtn').addEventListener('click', function(){ setView('library'); document.getElementById('searchInput').focus(); });
+  document.getElementById('bellBtn').addEventListener('click', function(){ /* notifications placeholder */ });
 
   // ---------------- avatar dropdown ----------------
   document.getElementById('avatarBtn').addEventListener('click', function(){
@@ -1001,27 +1271,228 @@
     document.getElementById('ddMenu').classList.toggle('show');
   });
   document.addEventListener('click', function(e){ if(!e.target.closest('.dd')) document.getElementById('ddMenu').classList.remove('show'); });
-  document.getElementById('ddProfile').addEventListener('click', function(){ setView('profile'); });
+  document.getElementById('ddProfile').addEventListener('click', function(){ document.getElementById('ddMenu').classList.remove('show'); setView('profile'); });
   document.getElementById('ddSignout').addEventListener('click', function(){
-    state.signedIn=false; state.isDeveloper=false; state.userName='Guest';
-    state.earnedBadges=[]; state.earnedCerts=[]; state.completedCourses={};
     document.getElementById('ddMenu').classList.remove('show');
-    setView('home');
+    if(confirm('Sign out of Nexor Skill'+(state.userName?(' as '+state.userName):'')+'?')) auth.signOut();
   });
 
-  // ---------------- login modal ----------------
-  function openLogin(){ document.getElementById('loginModal').classList.add('show'); }
+  /* ============================================================
+     LOGIN / CREATE ACCOUNT — real Firebase Auth, same shared
+     account system as Kashish AI. Progress (badges, certs,
+     completed courses) is synced to users/{uid}/nexorSkillProgress
+     so it follows the account across devices.
+     ============================================================ */
+  function openLogin(){ document.getElementById('loginModal').classList.add('show'); switchAuthTab('in'); }
   function closeLogin(){ document.getElementById('loginModal').classList.remove('show'); }
   document.getElementById('loginCancel').addEventListener('click', closeLogin);
+  document.getElementById('signupCancel').addEventListener('click', closeLogin);
   document.getElementById('loginModal').addEventListener('click', function(e){ if(e.target===this) closeLogin(); });
-  document.getElementById('loginConfirm').addEventListener('click', function(){
-    var name = document.getElementById('loginName').value.trim() || 'Guest';
-    state.signedIn = true; state.userName = name; state.isDeveloper = false;
-    closeLogin(); setView('profile');
+  document.getElementById('continueGuest').addEventListener('click', closeLogin);
+
+  function switchAuthTab(which){
+    document.getElementById('tabSignIn').classList.toggle('active', which==='in');
+    document.getElementById('tabSignUp').classList.toggle('active', which==='up');
+    document.getElementById('paneSignIn').classList.toggle('active', which==='in');
+    document.getElementById('paneSignUp').classList.toggle('active', which==='up');
+  }
+  document.getElementById('tabSignIn').addEventListener('click', function(){ switchAuthTab('in'); });
+  document.getElementById('tabSignUp').addEventListener('click', function(){ switchAuthTab('up'); });
+
+  function setAuthBusy(btnId, busy, restoreLabel){
+    var b = document.getElementById(btnId);
+    if(busy){ b.dataset.label = b.textContent; b.textContent='Please wait…'; b.disabled=true; }
+    else { b.textContent = restoreLabel || b.dataset.label || b.textContent; b.disabled=false; }
+  }
+  function friendlyAuthErr(err){
+    var code = err && err.code || '';
+    if(code==='auth/wrong-password' || code==='auth/invalid-login-credentials' || code==='auth/invalid-credential') return 'Wrong email/username or password.';
+    if(code==='auth/user-not-found') return 'No account found for that email/username.';
+    if(code==='auth/email-already-in-use') return 'An account already exists for that email.';
+    if(code==='auth/invalid-email') return 'That email address looks invalid.';
+    if(code==='auth/weak-password') return 'Password must be at least 6 characters.';
+    if(code==='auth/network-request-failed') return 'Network error — check your connection.';
+    return (err && err.message) ? err.message : 'Something went wrong. Try again.';
+  }
+  // Login accepts an email OR an @username — resolved against the shared
+  // handleIndex, same lookup the main Kashish AI login uses.
+  function resolveLoginEmail(identifier){
+    var id=(identifier||'').trim();
+    if(!id) return Promise.resolve(null);
+    if(id.indexOf('@')>0 && id.indexOf('.')>-1) return Promise.resolve(id); // looks like an email
+    var handle=id.replace(/^@/,'').toLowerCase();
+    return db.ref('handleIndex/'+handle).once('value').then(function(hSnap){
+      var hVal = hSnap.exists()?hSnap.val():null;
+      var uid = typeof hVal==='string' ? hVal : (hVal && hVal.uid ? hVal.uid : null);
+      if(!uid) return null;
+      return db.ref('users/'+uid+'/email').once('value').then(function(eSnap){ return eSnap.exists()?eSnap.val():null; });
+    }).catch(function(){ return null; });
+  }
+  document.getElementById('btn-login-pass').addEventListener('click', function(){
+    var idf=document.getElementById('l-email').value.trim(), p=document.getElementById('l-pass').value;
+    var errEl=document.getElementById('auth-err-login'); errEl.textContent='';
+    if(!idf||!p){ errEl.textContent='Enter email/username and password'; return; }
+    setAuthBusy('btn-login-pass', true);
+    resolveLoginEmail(idf).then(function(email){
+      if(!email){ errEl.textContent='No account found for that email/username.'; setAuthBusy('btn-login-pass', false, 'Sign in'); return; }
+      return auth.signInWithEmailAndPassword(email, p).then(function(){
+        closeLogin();
+      });
+    }).catch(function(err){
+      errEl.textContent = friendlyAuthErr(err);
+      setAuthBusy('btn-login-pass', false, 'Sign in');
+    });
+  });
+  document.getElementById('btn-reg').addEventListener('click', function(){
+    var name=document.getElementById('r-name').value.trim(),
+        handle=document.getElementById('r-handle').value.trim().replace(/^@/,'').replace(/[^a-zA-Z0-9_]/g,'').toLowerCase(),
+        email=document.getElementById('r-email').value.trim(),
+        p=document.getElementById('r-pass').value;
+    var errEl=document.getElementById('auth-err-reg'); errEl.textContent='';
+    if(!name||!handle||!email||!p){ errEl.textContent='Fill in all fields'; return; }
+    if(handle.length<3){ errEl.textContent='Username must be at least 3 characters'; return; }
+    if(p.length<6){ errEl.textContent='Password must be at least 6 characters'; return; }
+    setAuthBusy('btn-reg', true);
+    var handleRef = db.ref('handleIndex/'+handle);
+    handleRef.once('value').then(function(preSnap){
+      if(preSnap.exists()){ errEl.textContent='Username @'+handle+' is already taken.'; setAuthBusy('btn-reg', false, 'Create account'); return null; }
+      return auth.createUserWithEmailAndPassword(email, p).then(function(cred){
+        return handleRef.transaction(function(curr){ return curr===null ? {uid:cred.user.uid} : curr; }).then(function(tx){
+          if(!tx.committed || !tx.snapshot.val() || tx.snapshot.val().uid!==cred.user.uid){
+            return cred.user.delete().catch(function(){}).then(function(){ throw {message:'Username @'+handle+' is already taken.'}; });
+          }
+          return db.ref('users/'+cred.user.uid).set({
+            name:name, handle:handle, email:cred.user.email,
+            createdAt: firebase.database.ServerValue.TIMESTAMP,
+            createdVia:'nexorskill'
+          }).catch(function(profileErr){
+            return handleRef.remove().catch(function(){}).then(function(){ return cred.user.delete().catch(function(){}); }).then(function(){ throw profileErr; });
+          });
+        }).then(function(){ closeLogin(); });
+      });
+    }).catch(function(err){
+      errEl.textContent = friendlyAuthErr(err);
+      setAuthBusy('btn-reg', false, 'Create account');
+    });
+  });
+
+  // ---------------- progress sync (Firebase) ----------------
+  var progressRef = null;
+  var saveTimer = null;
+  function scheduleSaveProgress(){
+    if(!state.signedIn || !progressRef) return;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){
+      progressRef.set({
+        completedCourses: state.completedCourses,
+        earnedBadges: state.earnedBadges.map(function(b){ return {courseId:b.courseId, date:b.date.toISOString()}; }),
+        earnedCerts: state.earnedCerts.map(function(c){ return {pathId:c.pathId, date:c.date.toISOString()}; }),
+        isDeveloper: state.isDeveloper
+      }).catch(function(e){ console.warn('Nexor Skill: could not save progress', e); });
+    }, 500);
+  }
+
+  auth.onAuthStateChanged(function(user){
+    document.getElementById('ddMenu').classList.remove('show');
+    if(user){
+      progressRef = db.ref('users/'+user.uid+'/nexorSkillProgress');
+      db.ref('users/'+user.uid).once('value').then(function(snap){
+        var profile = snap.exists()?snap.val():{};
+        return progressRef.once('value').then(function(pSnap){
+          var prog = pSnap.exists()?pSnap.val():{};
+          state.signedIn = true;
+          state.uid = user.uid;
+          state.userName = profile.name || user.email || 'Learner';
+          state.isDeveloper = !!prog.isDeveloper;
+          state.completedCourses = prog.completedCourses || {};
+          state.earnedBadges = (prog.earnedBadges||[]).map(function(b){ return {courseId:b.courseId, date:new Date(b.date)}; });
+          state.earnedCerts = (prog.earnedCerts||[]).map(function(c){ return {pathId:c.pathId, date:new Date(c.date)}; });
+          renderCards(); renderPathGrids();
+          if(state.view==='profile') renderProfile();
+        });
+      }).catch(function(e){ console.warn('Nexor Skill: could not load profile', e); });
+    } else {
+      progressRef = null;
+      state.signedIn = false; state.uid = null; state.isDeveloper = false;
+      state.userName = 'Guest'; state.completedCourses = {}; state.earnedBadges = []; state.earnedCerts = [];
+      renderCards(); renderPathGrids();
+      if(state.view==='profile') renderProfile();
+    }
+  });
+
+  /* ============================================================
+     KASHISH AI — lightweight in-site helper. Answers questions
+     about courses/paths using the site's own data, and hands off
+     to the full Kashish AI app for anything deeper.
+     ============================================================ */
+  var kaiOpened = false;
+  function kaiAddMsg(text, who){
+    var d=document.createElement('div'); d.className='kai-msg '+who; d.textContent=text;
+    var body=document.getElementById('kaiBody'); body.appendChild(d); body.scrollTop=body.scrollHeight;
+  }
+  function kaiChips(list){
+    var wrap=document.getElementById('kaiChips'); wrap.innerHTML='';
+    list.forEach(function(label){
+      var c=document.createElement('button'); c.className='kai-chip'; c.textContent=label;
+      c.addEventListener('click', function(){ kaiHandle(label); });
+      wrap.appendChild(c);
+    });
+  }
+  function kaiOpen(){
+    document.getElementById('kaiPanel').classList.add('show');
+    if(!kaiOpened){
+      kaiOpened = true;
+      kaiAddMsg('Hi, I\'m Kashish AI. I can help you pick a course or path here on Nexor Skill.', 'bot');
+      kaiChips(['What should I learn first?','Recommend a path','How do certifications work?']);
+    }
+  }
+  document.getElementById('kaiFab').addEventListener('click', kaiOpen);
+  document.getElementById('kaiClose').addEventListener('click', function(){ document.getElementById('kaiPanel').classList.remove('show'); });
+
+  function kaiFindCourse(q){
+    var ql=q.toLowerCase();
+    return Object.keys(COURSES).map(function(id){ return {id:id, c:COURSES[id]}; })
+      .find(function(o){ return o.c.title.toLowerCase().indexOf(ql)>-1 || ql.indexOf(o.c.title.toLowerCase())>-1; });
+  }
+  function kaiHandle(text){
+    kaiAddMsg(text, 'user');
+    var q = text.toLowerCase();
+    var reply, chips = [];
+    if(q.indexOf('first')>-1 || q.indexOf('begin')>-1 || q.indexOf('start')>-1){
+      reply = 'Start with "Introduction to Prompting" in the Prompting Foundations path — everything else builds on it.';
+      chips = ['Recommend a path','How do certifications work?'];
+    } else if(q.indexOf('path')>-1 || q.indexOf('recommend')>-1){
+      reply = 'If you are new, try Prompting Foundations. For how the AI itself works, try Understanding Kashish AI. For applying it at work, try Business with AI.';
+      chips = ['What should I learn first?','How do certifications work?'];
+    } else if(q.indexOf('cert')>-1){
+      reply = 'Finish every course in a learning path and you earn that path\'s certification automatically on your Developer Profile — no extra exam.';
+      chips = ['Recommend a path','What should I learn first?'];
+    } else if(q.indexOf('badge')>-1){
+      reply = 'You earn a completion badge for each course once you pass its short quiz — you can retake the quiz anytime.';
+    } else if(q.indexOf('sign') > -1 || q.indexOf('login') > -1 || q.indexOf('account') > -1){
+      reply = 'It is the same account as Kashish AI — use the avatar icon top-right to sign in or create one.';
+    } else {
+      var found = kaiFindCourse(text);
+      if(found){
+        reply = found.c.title+': '+found.c.desc;
+        chips = ['What should I learn first?'];
+      } else {
+        reply = 'I can help with picking courses and paths here on Nexor Skill. For deeper questions, open the full Kashish AI app.';
+        chips = ['What should I learn first?','Recommend a path','How do certifications work?'];
+      }
+    }
+    setTimeout(function(){ kaiAddMsg(reply, 'bot'); if(chips.length) kaiChips(chips); }, 260);
+  }
+  document.getElementById('kaiSend').addEventListener('click', function(){
+    var inp=document.getElementById('kaiInput'); var v=inp.value.trim();
+    if(!v) return; inp.value=''; kaiHandle(v);
+  });
+  document.getElementById('kaiInput').addEventListener('keydown', function(e){
+    if(e.key==='Enter'){ document.getElementById('kaiSend').click(); }
   });
 
   // ---------------- init ----------------
-  renderHome();
+  renderCards();
 })();
 </script>
 </body>
