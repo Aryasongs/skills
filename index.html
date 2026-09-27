@@ -202,14 +202,28 @@
   .pp-bar i{display:block;height:100%;background:var(--good);}
 
   .badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
-  .badge-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;}
+  .badge-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;}
   .badge-card .bic{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
   .badge-card .bic svg{width:20px;height:20px;}
   .badge-card .blabel{font-size:10px;letter-spacing:.03em;color:var(--muted-2);margin-bottom:5px;}
   .badge-card h4{font-size:13.5px;font-weight:600;margin:0 0 7px;line-height:1.35;}
   .badge-card .issued{font-size:11.5px;color:var(--muted-2);margin-bottom:2px;}
-  .badge-card .issuer{font-size:11.5px;color:var(--muted);}
+  .badge-card .issuer{font-size:11.5px;color:var(--muted);margin-bottom:10px;}
   .cert-card{background:linear-gradient(135deg,#2b2440,#1a1a1d);}
+  .badge-share-btn{display:flex;align-items:center;gap:6px;background:var(--panel-2);border:1px solid var(--line);border-radius:20px;padding:6px 11px;font-size:12px;color:var(--muted);width:fit-content;}
+  .badge-share-btn:hover{color:var(--text);border-color:var(--muted-2);}
+  .badge-share-btn svg{width:13px;height:13px;}
+  .badge-share-btn.copied{color:var(--good);border-color:var(--good);}
+
+  .p-avatar-wrap{position:relative;flex:none;width:70px;height:70px;}
+  .p-avatar-wrap .p-avatar{width:70px;height:70px;overflow:hidden;}
+  .p-avatar-wrap .p-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+  .avatar-edit-btn{position:absolute;bottom:-2px;right:-2px;width:26px;height:26px;border-radius:50%;background:var(--panel-2);border:2px solid var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;padding:0;}
+  .avatar-edit-btn svg{width:13px;height:13px;}
+  .avatar-edit-btn:hover{background:var(--lav);color:var(--lav-ic);}
+  .profile-banner{position:relative;}
+  .profile-share-btn{position:absolute;top:16px;right:18px;display:flex;align-items:center;gap:7px;}
+  .profile-share-btn svg{width:14px;height:14px;}
   .empty-badges{border:1px dashed var(--line);border-radius:14px;padding:30px;text-align:center;color:var(--muted);font-size:14px;}
 
   .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:80;}
@@ -272,6 +286,40 @@
   .kai-inputrow input{flex:1;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;color:var(--text);font-size:13.5px;}
   .kai-send{background:var(--lav);border:none;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:#1a1a1d;flex:none;}
   .kai-send svg{width:16px;height:16px;}
+
+  /* ---- SETTINGS (Google Skills-style: profile / visibility / notifications / account) ---- */
+  .settings-head h1{font-size:32px;font-weight:500;margin:0 0 8px;}
+  .settings-head p{color:var(--muted);font-size:15px;margin-bottom:30px;max-width:560px;line-height:1.6;}
+  .settings-layout{display:grid;grid-template-columns:200px 1fr;gap:36px;align-items:start;}
+  @media (max-width:760px){ .settings-layout{grid-template-columns:1fr;} }
+  .settings-nav{display:flex;flex-direction:column;gap:2px;position:sticky;top:88px;}
+  .settings-nav a{padding:9px 12px;border-radius:9px;font-size:14px;color:var(--muted);cursor:pointer;}
+  .settings-nav a:hover{color:var(--text);}
+  .settings-nav a.active{background:var(--panel-2);color:var(--text);}
+  .set-block{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px 26px;margin-bottom:20px;}
+  .set-block h2{font-size:17px;font-weight:600;margin:0 0 4px;}
+  .set-block .set-desc{color:var(--muted);font-size:13px;margin:0 0 18px;max-width:520px;line-height:1.5;}
+  .set-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-top:1px solid var(--line);}
+  .set-row:first-of-type{border-top:none;padding-top:2px;}
+  .set-row-txt strong{display:block;font-size:14px;font-weight:500;margin-bottom:2px;}
+  .set-row-txt span{color:var(--muted-2);font-size:12.5px;}
+  .toggle{width:40px;height:23px;border-radius:20px;background:var(--panel-2);border:1px solid var(--line);position:relative;flex:none;padding:0;}
+  .toggle i{position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:var(--muted);transition:all .15s;}
+  .toggle.on{background:rgba(127,211,154,.25);border-color:var(--good);}
+  .toggle.on i{left:19px;background:var(--good);}
+  .share-link-row{display:flex;gap:10px;margin-top:14px;}
+  .share-link-row input{flex:1;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;color:var(--muted);font-size:13px;}
+  .set-field{margin-bottom:14px;}
+  .set-field .field-lbl{font-size:12px;color:var(--muted-2);margin:0 0 5px;}
+  .set-field input{width:100%;max-width:340px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--text);font-size:14px;}
+  .danger-block{border-color:#4a2a28;}
+  .danger-block h2{color:#e2938b;}
+  .btn-danger{border-color:#7a3530;color:#e2938b;}
+  .btn-danger:hover{background:rgba(226,147,139,.08);}
+  .policies-note{margin-top:6px;}
+  .policy-links{display:flex;flex-wrap:wrap;gap:8px 18px;}
+  .policy-links a{color:var(--muted);font-size:13px;cursor:pointer;}
+  .policy-links a:hover{color:var(--text);text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -292,6 +340,7 @@
       <button class="avatar" id="avatarBtn">G</button>
       <div class="dd-menu" id="ddMenu">
         <button id="ddProfile">View developer profile</button>
+        <button id="ddSettings">Settings</button>
         <button id="ddSignout">Sign out</button>
       </div>
     </div>
@@ -364,6 +413,10 @@
       <div class="section-h"><h2>Docs &amp; guidelines</h2></div>
       <div class="docs-grid" id="docsGrid"></div>
     </div>
+    <div class="commons-block">
+      <div class="section-h"><h2>Policies</h2></div>
+      <div class="docs-grid" id="policiesGrid"></div>
+    </div>
   </section>
 
   <!-- ===================== PATH DETAIL ===================== -->
@@ -424,7 +477,12 @@
     </div>
 
     <div class="profile-banner">
-      <div class="p-avatar" id="pAvatar">G</div>
+      <button class="btn profile-share-btn" id="shareProfileBtnProfile" title="Share your public profile link"></button>
+      <div class="p-avatar-wrap">
+        <div class="p-avatar" id="pAvatar">G</div>
+        <button class="avatar-edit-btn" id="pAvatarEditBtn" title="Change profile photo"></button>
+        <input type="file" id="avatarFileInput" accept="image/*" style="display:none;">
+      </div>
       <div class="p-info">
         <h2 id="pName">Guest learner</h2>
         <div class="handle" id="pHandle">nexorskill.com/dev/guest</div>
@@ -447,6 +505,92 @@
     <div class="section-h" style="margin-top:34px;"><h2>Completion badges</h2><span id="badgeCountLbl">0 earned</span></div>
     <div class="badge-grid" id="badgeGrid"></div>
     <div class="empty-badges" id="emptyBadges">No badges yet — start a course from the library to earn your first one.</div>
+  </section>
+
+  <!-- ===================== SETTINGS (Google Skills-inspired) ===================== -->
+  <section class="view" id="view-settings">
+    <div class="settings-head">
+      <h1>Settings</h1>
+      <p>Manage your Nexor Skill profile, what's public, and how we contact you. This is the same account used across Kashish AI.</p>
+    </div>
+    <div class="settings-layout">
+      <nav class="settings-nav">
+        <a data-jump="set-profile" class="active">Profile</a>
+        <a data-jump="set-visibility">Public visibility</a>
+        <a data-jump="set-notifs">Notifications</a>
+        <a data-jump="set-policies">Policies</a>
+        <a data-jump="set-account">Account</a>
+      </nav>
+      <div>
+        <div class="set-block" id="set-profile">
+          <h2>Profile</h2>
+          <p class="set-desc">Your name and username come from your Nexor account and are shared with Kashish AI.</p>
+          <div class="set-field"><div class="field-lbl">Name</div><input id="setName" disabled></div>
+          <div class="set-field"><div class="field-lbl">Username</div><input id="setHandle" disabled></div>
+          <div class="set-field" style="margin-bottom:0;"><div class="field-lbl">Member since</div><input id="setMemberSince" disabled></div>
+        </div>
+
+        <div class="set-block" id="set-visibility">
+          <h2>Public visibility</h2>
+          <p class="set-desc">When your profile is public, anyone with the link can see your name, member-since year, and earned badges — same as a public Google Skills profile.</p>
+          <div class="set-row">
+            <div class="set-row-txt"><strong>Make profile public</strong><span>Off by default. You can turn this off again anytime.</span></div>
+            <button class="toggle" id="toggleVisibility"><i></i></button>
+          </div>
+          <div id="shareLinkWrap" style="display:none;">
+            <div class="share-link-row">
+              <input id="shareLinkInput" readonly>
+              <button class="btn" id="copyShareLink">Copy link</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="set-block" id="set-notifs">
+          <h2>Notifications</h2>
+          <p class="set-desc">Choose what Nexor Skill emails you about. Account-security emails are always sent.</p>
+          <div class="set-row" style="border-top:none;padding-top:2px;">
+            <div class="set-row-txt"><strong>Badge &amp; certification emails</strong><span>When you earn a badge or finish a path.</span></div>
+            <button class="toggle on" id="toggleBadgeEmails"><i></i></button>
+          </div>
+          <div class="set-row">
+            <div class="set-row-txt"><strong>New course announcements</strong><span>When a new course is added to the library.</span></div>
+            <button class="toggle" id="toggleNewCourseEmails"><i></i></button>
+          </div>
+          <div class="set-row">
+            <div class="set-row-txt"><strong>Kashish AI product updates</strong><span>Occasional updates about Kashish AI itself.</span></div>
+            <button class="toggle" id="toggleProductEmails"><i></i></button>
+          </div>
+        </div>
+
+        <div class="set-block" id="set-policies">
+          <h2>Policies</h2>
+          <p class="set-desc policies-note">These govern your use of Nexor Skill and the shared Kashish AI account.</p>
+          <div class="policy-links" id="settingsPolicyLinks"></div>
+        </div>
+
+        <div class="set-block" id="set-account">
+          <h2>Account</h2>
+          <p class="set-desc" id="setAccountEmail">Signed in as —</p>
+          <div class="set-row" style="border-top:none;padding-top:2px;">
+            <div class="set-row-txt"><strong>Password</strong><span>We'll email you a reset link.</span></div>
+            <button class="btn" id="sendPwReset">Send reset email</button>
+          </div>
+          <div class="set-row">
+            <div class="set-row-txt"><strong>Sign out</strong><span>End your session on this device.</span></div>
+            <button class="btn" id="settingsSignout">Sign out</button>
+          </div>
+        </div>
+
+        <div class="set-block danger-block">
+          <h2>Danger zone</h2>
+          <p class="set-desc">Account deletion removes your Nexor Skill progress and, since this is a shared account, your Kashish AI account too.</p>
+          <div class="set-row" style="border-top:none;padding-top:2px;">
+            <div class="set-row-txt"><strong>Delete account</strong><span>This cannot be undone.</span></div>
+            <button class="btn btn-danger" id="requestDelete">Delete account</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
 </main>
@@ -587,7 +731,9 @@
     badge: svg('<circle cx="12" cy="9" r="5.5"/><path d="M8.5 13.5L7 21l5-2.5L17 21l-1.5-7.5"/>'),
     lightning: svg('<path d="M13 2 4 14h6l-1 8 9-12h-6z"/>', 1.4),
     sparkle: svg('<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>'),
-    send: svg('<path d="M4 12l16-8-6 16-2.5-6.5z"/>')
+    send: svg('<path d="M4 12l16-8-6 16-2.5-6.5z"/>'),
+    share: svg('<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.6l7.6-4.2M8.2 13.4l7.6 4.2"/>'),
+    camera: svg('<path d="M4 8h3l1.6-2.4h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.2" r="3.6"/>')
   };
   function ic(key, size){ return '<span style="display:inline-flex;width:'+(size||16)+'px;height:'+(size||16)+'px;">'+ICONS[key]+'</span>'; }
 
@@ -823,6 +969,19 @@
   };
 
   // ---------------- DOCS ----------------
+  var POLICIES = [
+    { id:'terms', tag:'Policy', title:'Terms of Service', summary:'The basic rules for using Nexor Skill and the shared Kashish AI account.',
+      body:[['p','By using Nexor Skill you agree to use the platform, its courses, and the shared Kashish AI account in good faith, and not to attempt to disrupt the service or misuse another learner\'s account.'],
+        ['ul',['You are responsible for activity under your account.','Badges and certifications are issued by Nexor Cloud and may be revoked if earned through misuse.','We may update courses, paths, or these terms — significant changes will be noted on this page.']]] },
+    { id:'privacy', tag:'Policy', title:'Privacy Policy', summary:'What we store about your progress, and how your public profile works.',
+      body:[['p','Nexor Skill stores your name, username, email, and course progress (completed courses, badges, certifications) against your shared Kashish AI account, so progress follows you across devices.'],
+        ['ul',['Your profile is private by default — only you can see your progress.','If you make your profile public in Settings, your name, member-since year, and earned badges become visible to anyone with the link.','You can make your profile private again at any time from Settings.']]] },
+    { id:'aup', tag:'Policy', title:'Acceptable Use Policy', summary:'What is not allowed on Nexor Skill.',
+      body:[['p','Do not use Nexor Skill to harass other learners, attempt to bypass course quizzes through automated means, or misrepresent badges or certifications you have not actually earned.']] },
+    { id:'honor-code', tag:'Policy', title:'Honor Code for quizzes', summary:'Badges mean something because you actually did the work.',
+      body:[['p','Course quizzes are open-note, but the badge is meant to reflect that you actually worked through the lessons. If you are stuck, retake the quiz as many times as you need — there is no penalty for retrying.']] }
+  ];
+
   var DOCS = [
     { id:'style-guide', tag:'Guidelines', title:'Writing prompts: a style guide', summary:'Short, specific, and structured beats long and vague, almost every time.',
       body:[['p','Short, specific, and structured beats long and vague, almost every time. Treat a prompt like a well-written ticket: one clear task, the context needed to do it, and a definition of done.'],
@@ -849,11 +1008,17 @@
       body:[['p','AI drafts should be checked the same way any content is: sufficient color contrast, real heading structure, alt text on images, and plain language as the default rather than the exception.']] }
   ];
 
+  // ---------------- points ----------------
+  var BADGE_POINTS = 150;
+  var CERT_POINTS = 500;
+
   // ---------------- state ----------------
   var state = {
     view:'library', activeCourse:null, activeLessonIdx:0, activePath:null,
     quizAnswers:{}, signedIn:false, userName:'Guest', isDeveloper:false, uid:null,
-    completedCourses:{}, earnedBadges:[], earnedCerts:[],
+    userHandle:'', userEmail:'', memberSince:'',
+    publicProfile:false, notifPrefs:{badge:true, newCourse:false, product:false}, profileImage:null,
+    completedCourses:{}, earnedBadges:[], earnedCerts:[], /* points: BADGE_POINTS per badge, CERT_POINTS per cert */
     skillFilter:['Prompting','AI','Business'], levelFilter:'Any', query:''
   };
 
@@ -989,19 +1154,44 @@
       var card = document.createElement('div');
       card.className='doc-card';
       card.innerHTML = '<div class="tag">'+d.tag+'</div><h4>'+d.title+'</h4><p>'+d.summary+'</p>';
-      card.addEventListener('click', function(){ openDoc(d.id); });
+      card.addEventListener('click', function(){ openDoc(d.id, 'commons'); });
       grid.appendChild(card);
     });
   }
-  function openDoc(id){
-    var d = DOCS.find(function(x){return x.id===id;});
+  function renderPoliciesGrid(){
+    var grid = document.getElementById('policiesGrid');
+    if(!grid) return;
+    grid.innerHTML='';
+    POLICIES.forEach(function(d){
+      var card = document.createElement('div');
+      card.className='doc-card';
+      card.innerHTML = '<div class="tag">'+d.tag+'</div><h4>'+d.title+'</h4><p>'+d.summary+'</p>';
+      card.addEventListener('click', function(){ openDoc(d.id, 'commons'); });
+      grid.appendChild(card);
+    });
+    var links = document.getElementById('settingsPolicyLinks');
+    if(links){
+      links.innerHTML='';
+      POLICIES.forEach(function(d){
+        var a = document.createElement('a');
+        a.textContent = d.title;
+        a.addEventListener('click', function(){ openDoc(d.id, 'settings'); });
+        links.appendChild(a);
+      });
+    }
+  }
+  var docBackView = 'commons';
+  function openDoc(id, backView){
+    var d = DOCS.find(function(x){return x.id===id;}) || POLICIES.find(function(x){return x.id===id;});
+    if(!d) return;
+    docBackView = backView || 'commons';
     document.getElementById('dTag').textContent = d.tag;
     document.getElementById('dTitle').textContent = d.title;
     renderBlocks(document.getElementById('dBody'), d.body);
     setView('docReader');
     window.scrollTo(0,0);
   }
-  document.getElementById('backFromDoc').addEventListener('click', function(){ setView('commons'); });
+  document.getElementById('backFromDoc').addEventListener('click', function(){ setView(docBackView); });
 
   // ---------------- PATH DETAIL ----------------
   function openPath(pathId){
@@ -1138,7 +1328,7 @@
     if(!state.completedCourses[cid]){
       state.completedCourses[cid]=true;
       state.earnedBadges.push({courseId:cid, date:new Date()});
-      showToast(c.theme, c.icon, c.title, 'Nexor Cloud · Completion badge');
+      showToast(c.theme, c.icon, c.title, 'Nexor Cloud · Completion badge · +'+BADGE_POINTS+' pts');
       checkCertification();
       renderCards();
       scheduleSaveProgress();
@@ -1153,7 +1343,7 @@
     var already = state.earnedCerts.some(function(x){return x.pathId===p.id;});
     if(prog.done===prog.total && !already){
       state.earnedCerts.push({pathId:p.id, date:new Date()});
-      setTimeout(function(){ showToast(p.theme, p.icon, p.title+' — Certified', 'Nexor Cloud · Certification'); }, 4400);
+      setTimeout(function(){ showToast(p.theme, p.icon, p.title+' — Certified', 'Nexor Cloud · Certification · +'+CERT_POINTS+' pts'); }, 4400);
     }
   }
 
@@ -1176,13 +1366,60 @@
   // ---------------- PROFILE ----------------
   function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' EDT'; }
 
-  function renderProfile(){
+  function profileSlug(){ return state.userHandle || (state.userName||'guest').toLowerCase().replace(/\s+/g,'-'); }
+  function shareUrl(kind, id){ return 'https://nexorskill.com/dev/'+profileSlug()+'/'+kind+'/'+id; }
+
+  function renderAvatars(){
     var initial = (state.userName||'G').trim().charAt(0).toUpperCase() || 'G';
-    document.getElementById('pAvatar').textContent = initial;
-    document.getElementById('avatarBtn').textContent = initial;
+    var pAv = document.getElementById('pAvatar'), tAv = document.getElementById('avatarBtn');
+    if(state.profileImage){
+      pAv.innerHTML = '<img src="'+state.profileImage+'" alt="">';
+      tAv.innerHTML = '<img src="'+state.profileImage+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">';
+    } else {
+      pAv.textContent = initial;
+      tAv.textContent = initial;
+    }
+  }
+
+  function copyText(text){
+    if(navigator.clipboard && navigator.clipboard.writeText){ return navigator.clipboard.writeText(text); }
+    var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta);
+    return Promise.resolve();
+  }
+
+  function shareLink(url, title, btnEl){
+    if(navigator.share){
+      navigator.share({title:title, url:url}).catch(function(){});
+      return;
+    }
+    copyText(url).then(function(){
+      if(!btnEl) return;
+      var orig = btnEl.innerHTML;
+      btnEl.classList.add('copied');
+      btnEl.innerHTML = '<span>Link copied</span>';
+      setTimeout(function(){ btnEl.classList.remove('copied'); btnEl.innerHTML = orig; }, 1600);
+    });
+  }
+
+  function renderProfile(){
+    renderAvatars();
     document.getElementById('pName').textContent = state.isDeveloper ? (state.userName+' · Developer Profile') : state.userName;
-    document.getElementById('pHandle').textContent = 'nexorskill.com/dev/'+(state.userName||'guest').toLowerCase().replace(/\s+/g,'-');
+    document.getElementById('pHandle').textContent = 'nexorskill.com/dev/'+profileSlug();
     document.getElementById('signedInName').textContent = state.userName;
+
+    var shareProfileBtn = document.getElementById('shareProfileBtnProfile');
+    shareProfileBtn.innerHTML = ic('share',14)+'<span>Share profile</span>';
+    shareProfileBtn.onclick = function(){
+      if(!state.publicProfile){ state.publicProfile = true; scheduleSaveProgress(); }
+      shareLink('https://nexorskill.com/dev/'+profileSlug(), state.userName+' — Nexor Skill profile', shareProfileBtn);
+    };
+
+    var editBtn = document.getElementById('pAvatarEditBtn');
+    editBtn.innerHTML = ic('camera',13);
+    editBtn.onclick = function(){ document.getElementById('avatarFileInput').click(); };
 
     document.getElementById('pTags').innerHTML = state.isDeveloper
       ? '<span class="p-tag">Developer Profile</span><span class="p-tag">Nexor Skill member</span>'
@@ -1190,7 +1427,7 @@
 
     document.getElementById('statBadges').textContent = state.earnedBadges.length;
     document.getElementById('statCerts').textContent = state.earnedCerts.length;
-    document.getElementById('statPoints').textContent = state.earnedBadges.length*150 + state.earnedCerts.length*500;
+    document.getElementById('statPoints').textContent = state.earnedBadges.length*BADGE_POINTS + state.earnedCerts.length*CERT_POINTS;
     document.getElementById('statStreak').textContent = document.getElementById('streakCount').textContent;
     document.getElementById('convertBanner').classList.toggle('show', state.signedIn && !state.isDeveloper);
 
@@ -1219,7 +1456,10 @@
         var card=document.createElement('div'); card.className='badge-card cert-card';
         card.innerHTML='<div class="bic" style="background:'+th.bg+';color:'+th.fg+';">'+ic(p.icon,20)+'</div>'+
           '<div class="blabel">CERTIFICATION</div><h4>'+p.title+'</h4>'+
-          '<div class="issued">Earned '+fmtDate(cert.date)+'</div><div class="issuer">Nexor Cloud</div>';
+          '<div class="issued">Earned '+fmtDate(cert.date)+'</div><div class="issuer">Nexor Cloud</div>'+
+          '<button class="badge-share-btn">'+ic('share',13)+'<span>Share</span></button>';
+        var certShareBtn = card.querySelector('.badge-share-btn');
+        certShareBtn.addEventListener('click', function(){ shareLink(shareUrl('cert', cert.pathId), p.title+' certification — Nexor Skill', certShareBtn); });
         certGrid.appendChild(card);
       });
     }
@@ -1236,12 +1476,41 @@
         var card=document.createElement('div'); card.className='badge-card';
         card.innerHTML='<div class="bic" style="background:'+th.bg+';color:'+th.fg+';">'+ic(c.icon,20)+'</div>'+
           '<div class="blabel">COMPLETION BADGE</div><h4>'+c.title+'</h4>'+
-          '<div class="issued">Earned '+fmtDate(b.date)+'</div><div class="issuer">Nexor Cloud</div>';
+          '<div class="issued">Earned '+fmtDate(b.date)+'</div><div class="issuer">Nexor Cloud</div>'+
+          '<button class="badge-share-btn">'+ic('share',13)+'<span>Share</span></button>';
+        var badgeShareBtn = card.querySelector('.badge-share-btn');
+        badgeShareBtn.addEventListener('click', function(){ shareLink(shareUrl('badge', b.courseId), c.title+' badge — Nexor Skill', badgeShareBtn); });
         grid.appendChild(card);
       });
     }
   }
   document.getElementById('convertBtn').addEventListener('click', function(){ state.isDeveloper=true; renderProfile(); scheduleSaveProgress(); });
+
+  // ---------------- profile photo upload (resized + saved to account) ----------------
+  document.getElementById('avatarFileInput').addEventListener('change', function(e){
+    var file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if(!file) return;
+    if(!file.type || file.type.indexOf('image/')!==0){ alert('Please choose an image file.'); return; }
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      var img = new Image();
+      img.onload = function(){
+        var size = 240;
+        var canvas = document.createElement('canvas');
+        canvas.width = size; canvas.height = size;
+        var ctx = canvas.getContext('2d');
+        var side = Math.min(img.width, img.height);
+        var sx = (img.width-side)/2, sy = (img.height-side)/2;
+        ctx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
+        state.profileImage = canvas.toDataURL('image/jpeg', 0.85);
+        renderAvatars();
+        scheduleSaveProgress();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
 
   // ---------------- nav / view switching ----------------
   function setView(v){
@@ -1249,13 +1518,14 @@
     document.querySelectorAll('.view').forEach(function(el){el.classList.remove('active');});
     document.getElementById('view-'+v).classList.add('active');
     document.querySelectorAll('.nav button').forEach(function(b){b.classList.remove('active');});
-    var map = {home:'home', library:'library', pathDetail:'library', reader:'library', commons:'commons', docReader:'commons', profile:null};
+    var map = {home:'home', library:'library', pathDetail:'library', reader:'library', commons:'commons', docReader:'commons', profile:null, settings:null};
     var navKey = map[v];
     if(navKey){ var navBtn = document.querySelector('.nav button[data-view="'+navKey+'"]'); if(navBtn) navBtn.classList.add('active'); }
     if(v==='home') renderPathGrids();
     if(v==='library') renderCards();
-    if(v==='commons'){ renderPathGrids(); renderDocsGrid(); }
+    if(v==='commons'){ renderPathGrids(); renderDocsGrid(); renderPoliciesGrid(); }
     if(v==='profile') renderProfile();
+    if(v==='settings') renderSettings();
   }
   document.querySelectorAll('.nav button[data-view]').forEach(function(btn){
     btn.addEventListener('click', function(){ setView(btn.getAttribute('data-view')); });
@@ -1272,9 +1542,98 @@
   });
   document.addEventListener('click', function(e){ if(!e.target.closest('.dd')) document.getElementById('ddMenu').classList.remove('show'); });
   document.getElementById('ddProfile').addEventListener('click', function(){ document.getElementById('ddMenu').classList.remove('show'); setView('profile'); });
+  document.getElementById('ddSettings').addEventListener('click', function(){ document.getElementById('ddMenu').classList.remove('show'); if(!state.signedIn){ openLogin(); return; } setView('settings'); });
   document.getElementById('ddSignout').addEventListener('click', function(){
     document.getElementById('ddMenu').classList.remove('show');
     if(confirm('Sign out of Nexor Skill'+(state.userName?(' as '+state.userName):'')+'?')) auth.signOut();
+  });
+
+  /* ============================================================
+     SETTINGS — Google Skills-inspired: profile, public visibility
+     (with a shareable link), notification preferences, policies,
+     and account actions.
+     ============================================================ */
+  function renderSettings(){
+    if(!state.signedIn){ setView('library'); openLogin(); return; }
+    document.getElementById('setName').value = state.userName;
+    document.getElementById('setHandle').value = state.userHandle ? '@'+state.userHandle : '—';
+    document.getElementById('setMemberSince').value = state.memberSince || '—';
+    document.getElementById('setAccountEmail').textContent = 'Signed in as '+(state.userEmail||'—');
+
+    var vTog = document.getElementById('toggleVisibility');
+    vTog.classList.toggle('on', state.publicProfile);
+    document.getElementById('shareLinkWrap').style.display = state.publicProfile ? 'block' : 'none';
+    if(state.publicProfile){
+      document.getElementById('shareLinkInput').value = 'https://nexorskill.com/dev/'+profileSlug();
+    }
+
+    document.getElementById('toggleBadgeEmails').classList.toggle('on', !!state.notifPrefs.badge);
+    document.getElementById('toggleNewCourseEmails').classList.toggle('on', !!state.notifPrefs.newCourse);
+    document.getElementById('toggleProductEmails').classList.toggle('on', !!state.notifPrefs.product);
+  }
+  document.getElementById('toggleVisibility').addEventListener('click', function(){
+    state.publicProfile = !state.publicProfile;
+    renderSettings(); scheduleSaveProgress();
+  });
+  document.getElementById('copyShareLink').addEventListener('click', function(){
+    var inp = document.getElementById('shareLinkInput'); inp.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    var btn = document.getElementById('copyShareLink'); var orig=btn.textContent;
+    btn.textContent='Copied'; setTimeout(function(){ btn.textContent=orig; }, 1400);
+  });
+  function wireNotifToggle(btnId, key){
+    document.getElementById(btnId).addEventListener('click', function(){
+      state.notifPrefs[key] = !state.notifPrefs[key];
+      renderSettings(); scheduleSaveProgress();
+    });
+  }
+  wireNotifToggle('toggleBadgeEmails','badge');
+  wireNotifToggle('toggleNewCourseEmails','newCourse');
+  wireNotifToggle('toggleProductEmails','product');
+
+  document.querySelectorAll('.settings-nav a').forEach(function(a){
+    a.addEventListener('click', function(){
+      document.querySelectorAll('.settings-nav a').forEach(function(x){x.classList.remove('active');});
+      a.classList.add('active');
+      var el = document.getElementById(a.getAttribute('data-jump'));
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  document.getElementById('sendPwReset').addEventListener('click', function(){
+    var btn=document.getElementById('sendPwReset');
+    if(!state.userEmail) return;
+    btn.disabled=true; var orig=btn.textContent; btn.textContent='Sending…';
+    auth.sendPasswordResetEmail(state.userEmail).then(function(){
+      btn.textContent='Email sent';
+    }).catch(function(e){
+      btn.textContent='Could not send'; console.warn(e);
+    }).finally(function(){ setTimeout(function(){ btn.disabled=false; btn.textContent=orig; }, 2500); });
+  });
+  document.getElementById('settingsSignout').addEventListener('click', function(){
+    if(confirm('Sign out of Nexor Skill'+(state.userName?(' as '+state.userName):'')+'?')) auth.signOut();
+  });
+  document.getElementById('requestDelete').addEventListener('click', function(){
+    if(!confirm('Delete your account? This removes your Nexor Skill progress and your shared Kashish AI account. This cannot be undone.')) return;
+    var user = auth.currentUser;
+    if(!user) return;
+    var uid = user.uid, handle = state.userHandle;
+    function afterDelete(){
+      db.ref('users/'+uid+'/nexorSkillProgress').remove().catch(function(){});
+      if(handle) db.ref('handleIndex/'+handle).remove().catch(function(){});
+      setView('library');
+    }
+    user.delete().then(afterDelete).catch(function(err){
+      if(err && err.code==='auth/requires-recent-login'){
+        var pw = prompt('For your security, re-enter your password to confirm deletion:');
+        if(!pw) return;
+        var cred = firebase.auth.EmailAuthProvider.credential(state.userEmail, pw);
+        user.reauthenticateWithCredential(cred).then(function(){ return user.delete(); }).then(afterDelete)
+          .catch(function(e2){ alert(friendlyAuthErr(e2)); });
+      } else {
+        alert(friendlyAuthErr(err));
+      }
+    });
   });
 
   /* ============================================================
@@ -1387,7 +1746,10 @@
         completedCourses: state.completedCourses,
         earnedBadges: state.earnedBadges.map(function(b){ return {courseId:b.courseId, date:b.date.toISOString()}; }),
         earnedCerts: state.earnedCerts.map(function(c){ return {pathId:c.pathId, date:c.date.toISOString()}; }),
-        isDeveloper: state.isDeveloper
+        isDeveloper: state.isDeveloper,
+        publicProfile: state.publicProfile,
+        notifPrefs: state.notifPrefs,
+        profileImage: state.profileImage || null
       }).catch(function(e){ console.warn('Nexor Skill: could not save progress', e); });
     }, 500);
   }
@@ -1403,20 +1765,30 @@
           state.signedIn = true;
           state.uid = user.uid;
           state.userName = profile.name || user.email || 'Learner';
+          state.userHandle = profile.handle || '';
+          state.userEmail = user.email || '';
+          state.memberSince = user.metadata && user.metadata.creationTime ? new Date(user.metadata.creationTime).getFullYear() : '';
           state.isDeveloper = !!prog.isDeveloper;
+          state.publicProfile = !!prog.publicProfile;
+          state.notifPrefs = prog.notifPrefs || {badge:true, newCourse:false, product:false};
           state.completedCourses = prog.completedCourses || {};
           state.earnedBadges = (prog.earnedBadges||[]).map(function(b){ return {courseId:b.courseId, date:new Date(b.date)}; });
           state.earnedCerts = (prog.earnedCerts||[]).map(function(c){ return {pathId:c.pathId, date:new Date(c.date)}; });
-          renderCards(); renderPathGrids();
+          state.profileImage = prog.profileImage || null;
+          renderCards(); renderPathGrids(); renderAvatars();
           if(state.view==='profile') renderProfile();
+          if(state.view==='settings') renderSettings();
         });
       }).catch(function(e){ console.warn('Nexor Skill: could not load profile', e); });
     } else {
       progressRef = null;
       state.signedIn = false; state.uid = null; state.isDeveloper = false;
-      state.userName = 'Guest'; state.completedCourses = {}; state.earnedBadges = []; state.earnedCerts = [];
-      renderCards(); renderPathGrids();
+      state.userName = 'Guest'; state.userHandle=''; state.userEmail=''; state.memberSince='';
+      state.publicProfile = false; state.notifPrefs = {badge:true, newCourse:false, product:false};
+      state.completedCourses = {}; state.earnedBadges = []; state.earnedCerts = []; state.profileImage = null;
+      renderCards(); renderPathGrids(); renderAvatars();
       if(state.view==='profile') renderProfile();
+      if(state.view==='settings') renderSettings();
     }
   });
 
